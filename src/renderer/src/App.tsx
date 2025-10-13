@@ -4,6 +4,8 @@ import { Sidebar } from "./components/layout/Sidebar";
 import { ProjectList } from "./components/ProjectList";
 import { ProjectDialog } from "./components/ProjectDialog";
 import { TaskDialog } from "./components/TaskDialog";
+import { ExportDialog } from "./components/ExportDialog";
+import { ImportDialog } from "./components/ImportDialog";
 import { EmptyState } from "./components/EmptyState";
 import { KanbanBoard } from "./components/KanbanBoard";
 import { KanbanBoardSkeleton } from "./components/skeletons/KanbanBoardSkeleton";
@@ -22,6 +24,8 @@ import type { Task } from "./types/task";
 function App(): React.JSX.Element {
 	const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 	const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+	const [exportDialogOpen, setExportDialogOpen] = useState(false);
+	const [importDialogOpen, setImportDialogOpen] = useState(false);
 	const [editingTask, setEditingTask] = useState<Task | null>(null);
 	const [editingProject, setEditingProject] = useState(false);
 	const {
@@ -52,9 +56,19 @@ function App(): React.JSX.Element {
 			setProjectDialogOpen(true);
 		});
 
+		const unsubscribeExport = window.api.onOpenExportDialog(() => {
+			setExportDialogOpen(true);
+		});
+
+		const unsubscribeImport = window.api.onOpenImportDialog(() => {
+			setImportDialogOpen(true);
+		});
+
 		return () => {
 			unsubscribeTask();
 			unsubscribeProject();
+			unsubscribeExport();
+			unsubscribeImport();
 		};
 	}, []);
 
@@ -219,9 +233,13 @@ function App(): React.JSX.Element {
 						if (!open) setEditingTask(null);
 					}}
 					task={editingTask || undefined}
+					projectId={currentProjectId}
 					onSubmit={handleCreateTask}
 				/>
 			)}
+
+			<ExportDialog open={exportDialogOpen} onOpenChange={setExportDialogOpen} />
+			<ImportDialog open={importDialogOpen} onOpenChange={setImportDialogOpen} />
 		</>
 	);
 }

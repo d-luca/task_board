@@ -24,11 +24,28 @@ interface TaskAPI {
 	search: (projectId: string, searchTerm: string) => Promise<unknown>;
 }
 
+interface ExportAPI {
+	toJSON: (options: unknown) => Promise<unknown>;
+	toCSV: (options: unknown) => Promise<unknown>;
+	createBackup: () => Promise<unknown>;
+	listBackups: () => Promise<unknown>;
+}
+
+interface ImportAPI {
+	fromJSON: (options: unknown) => Promise<unknown>;
+	restoreBackup: (backupPath: string) => Promise<unknown>;
+	selectFile: () => Promise<string | null>;
+}
+
 interface API {
 	project: ProjectAPI;
 	task: TaskAPI;
+	export: ExportAPI;
+	import: ImportAPI;
 	onOpenTaskDialog: (callback: () => void) => () => void;
 	onOpenProjectDialog: (callback: () => void) => () => void;
+	onOpenExportDialog: (callback: () => void) => () => void;
+	onOpenImportDialog: (callback: () => void) => () => void;
 }
 
 declare global {

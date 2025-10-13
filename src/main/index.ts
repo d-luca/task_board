@@ -144,6 +144,21 @@ function createApplicationMenu(): void {
 				},
 				{ type: "separator" },
 				{
+					label: "Export Data",
+					accelerator: "CmdOrCtrl+E",
+					click: () => {
+						mainWindow?.webContents.send("open-export-dialog");
+					},
+				},
+				{
+					label: "Import Data",
+					accelerator: "CmdOrCtrl+I",
+					click: () => {
+						mainWindow?.webContents.send("open-import-dialog");
+					},
+				},
+				{ type: "separator" },
+				{
 					label: "Quit",
 					accelerator: "CmdOrCtrl+Q",
 					click: () => {

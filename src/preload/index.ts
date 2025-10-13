@@ -32,6 +32,18 @@ const api = {
 		search: (projectId: string, searchTerm: string) =>
 			ipcRenderer.invoke("task:search", projectId, searchTerm),
 	},
+	// Export/Import API
+	export: {
+		toJSON: (options: unknown) => ipcRenderer.invoke("export:toJSON", options),
+		toCSV: (options: unknown) => ipcRenderer.invoke("export:toCSV", options),
+		createBackup: () => ipcRenderer.invoke("export:createBackup"),
+		listBackups: () => ipcRenderer.invoke("export:listBackups"),
+	},
+	import: {
+		fromJSON: (options: unknown) => ipcRenderer.invoke("import:fromJSON", options),
+		restoreBackup: (backupPath: string) => ipcRenderer.invoke("import:restoreBackup", backupPath),
+		selectFile: () => ipcRenderer.invoke("import:selectFile"),
+	},
 	// System events - listen for menu/tray actions
 	onOpenTaskDialog: (callback: () => void) => {
 		ipcRenderer.on("open-task-dialog", callback);
@@ -40,6 +52,14 @@ const api = {
 	onOpenProjectDialog: (callback: () => void) => {
 		ipcRenderer.on("open-project-dialog", callback);
 		return () => ipcRenderer.removeListener("open-project-dialog", callback);
+	},
+	onOpenExportDialog: (callback: () => void) => {
+		ipcRenderer.on("open-export-dialog", callback);
+		return () => ipcRenderer.removeListener("open-export-dialog", callback);
+	},
+	onOpenImportDialog: (callback: () => void) => {
+		ipcRenderer.on("open-import-dialog", callback);
+		return () => ipcRenderer.removeListener("open-import-dialog", callback);
 	},
 };
 

@@ -1,6 +1,14 @@
-import { ipcMain } from "electron";
+import { ipcMain, dialog } from "electron";
 import { projectService } from "../database/services/projectService";
 import { taskService } from "../database/services/taskService";
+import {
+	exportToJSON,
+	exportToCSV,
+	createBackup,
+	listBackups,
+	ExportOptions,
+} from "../database/services/exportService";
+import { importFromJSON, restoreFromBackup, ImportOptions } from "../database/services/importService";
 
 export function setupIpcHandlers(): void {
 	// Project handlers
@@ -75,5 +83,47 @@ export function setupIpcHandlers(): void {
 
 	ipcMain.handle("task:search", async (_event, projectId, searchTerm) => {
 		return await taskService.search(projectId, searchTerm);
+	});
+
+	// Export handlers
+	ipcMain.handle("export:toJSON", async (_event, options: ExportOptions) => {
+		return await exportToJSON(options);
+	});
+
+	ipcMain.handle("export:toCSV", async (_event, options: ExportOptions) => {
+		return await exportToCSV(options);
+	});
+
+	ipcMain.handle("export:createBackup", async () => {
+		return await createBackup();
+	});
+
+	ipcMain.handle("export:listBackups", async () => {
+		return await listBackups();
+	});
+
+	// Import handlers
+	ipcMain.handle("import:fromJSON", async (_event, options: ImportOptions) => {
+		return await importFromJSON(options);
+	});
+
+	ipcMain.handle("import:restoreBackup", async (_event, backupPath: string) => {
+		return await restoreFromBackup(backupPath);
+	});
+
+	ipcMain.handle("import:selectFile", async () => {
+		const result = await dialog.showOpenDialog({
+			properties: ["openFile"],
+			filters: [
+				{ name: "JSON Files", extensions: ["json"] },
+				{ name: "All Files", extensions: ["*"] },
+			],
+		});
+
+		if (result.canceled || result.filePaths.length === 0) {
+			return null;
+		}
+
+		return result.filePaths[0];
 	});
 }
