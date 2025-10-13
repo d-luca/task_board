@@ -1,7 +1,9 @@
-appId: com.electron.app
-productName: task_board
+appId: com.taskboard.app
+productName: TaskBoard
+copyright: Copyright © 2024 TaskBoard
 directories:
   buildResources: build
+  output: dist
 files:
   - "!**/.vscode/*"
   - "!src/*"
@@ -9,35 +11,131 @@ files:
   - "!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}"
   - "!{.env,.env.*,.npmrc,pnpm-lock.yaml}"
   - "!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}"
+  - "!{jest.config.js,coverage,src/test}"
+  - "!{ARCHITECTURE.md,DEVELOPMENT_PLAN.md,PROJECT_INSTRUCTIONS.md}"
+  - "!docs/*"
+  - "!docker-compose.yml"
 asarUnpack:
   - resources/**
+
+# Windows Configuration
 win:
-  executableName: task_board
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  executableName: TaskBoard
+  artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
-  createDesktopShortcut: always
+  deleteAppDataOnUninstall: false
+  artifactName: ${productName}-${version}-Setup.${ext}
+
+# macOS Configuration
 mac:
-  entitlementsInherit: build/entitlements.mac.plist
-  extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  category: public.app-category.productivity
+  hardenedRuntime: true
+  gatekeeperAssess: false
   notarize: false
+  artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
 dmg:
-  artifactName: ${name}-${version}.${ext}
+  contents:
+    - x: 410
+      y: 150
+      type: link
+      path: /Applications
+    - x: 130
+      y: 150
+      type: file
+  iconSize: 100
+  title: ${productName} ${version}
+  window:
+    width: 540
+    height: 380
+  artifactName: ${productName}-${version}.${ext}
+
+# Linux Configuration
 linux:
   target:
-    - AppImage
-    - snap
-    - deb
-  maintainer: electronjs.org
-  category: Utility
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+    - target: rpm
+      arch:
+        - x64
+  category: Office
+  synopsis: Task and Project Management Application
+  description: A modern task and project management application built with Electron
+  maintainer: TaskBoard Team <support@taskboard.com>
+  vendor: TaskBoard
+  artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
 appImage:
-  artifactName: ${name}-${version}.${ext}
+  license: MIT
+  artifactName: ${productName}-${version}.${ext}
+
+deb:
+  depends:
+    - gconf2
+    - gconf-service
+    - libnotify4
+    - libappindicator1
+    - libxtst6
+    - libnss3
+  priority: optional
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+rpm:
+  depends:
+    - libXScrnSaver
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+# Snap Configuration (optional)
+snap:
+  summary: Task and Project Management Application
+  description: A modern kanban-style task and project management application with MongoDB integration
+  grade: stable
+  confinement: strict
+  plugs:
+    - default
+    - network
+    - network-bind
+    - home
+    - removable-media
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+# Build Configuration
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-updates
+nodeGypRebuild: false
+buildDependenciesFromSource: false
+
+# Publish Configuration (disabled for now)
+publish: null
+
+# Compression
+compression: normal
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}

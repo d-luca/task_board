@@ -11,6 +11,7 @@ Phase 9 implementation focused on adding data export, import, and backup functio
 **File**: `src/main/database/services/exportService.ts`
 
 #### Features Implemented:
+
 - ✅ **JSON Export**: Export projects and tasks with full metadata
 - ✅ **CSV Export**: Export task data in spreadsheet format
 - ✅ **Backup Creation**: Create full database backups
@@ -19,6 +20,7 @@ Phase 9 implementation focused on adding data export, import, and backup functio
 - ✅ **Backup Management**: List available backups
 
 #### Key Functions:
+
 ```typescript
 exportToJSON(options: ExportOptions): Promise<ExportResult>
 exportToCSV(options: ExportOptions): Promise<ExportResult>
@@ -27,6 +29,7 @@ listBackups(): Promise<string[]>
 ```
 
 #### Export Locations:
+
 - **User Exports**: Saved to system Downloads folder
 - **Automatic Backups**: Saved to `{userData}/backups/` directory
 
@@ -35,6 +38,7 @@ listBackups(): Promise<string[]>
 **File**: `src/main/database/services/importService.ts`
 
 #### Features Implemented:
+
 - ✅ **JSON Import**: Parse and validate JSON import files
 - ✅ **Data Validation**: Comprehensive validation before import
 - ✅ **Merge Mode**: Add imported data to existing projects
@@ -44,6 +48,7 @@ listBackups(): Promise<string[]>
 - ✅ **Project Mapping**: Remap project IDs during import
 
 #### Key Functions:
+
 ```typescript
 importFromJSON(options: ImportOptions): Promise<ImportResult>
 restoreFromBackup(backupPath: string): Promise<ImportResult>
@@ -51,7 +56,8 @@ validateImportData(data: any): ValidationResult
 ```
 
 #### Validation Features:
-- Required field checking (name, _id, etc.)
+
+- Required field checking (name, \_id, etc.)
 - Project reference validation
 - Status value validation
 - Orphaned task detection
@@ -62,6 +68,7 @@ validateImportData(data: any): ValidationResult
 **File**: `src/renderer/src/components/ExportDialog.tsx`
 
 #### UI Components:
+
 - ✅ **Format Selection**:
   - JSON (recommended for backup)
   - CSV (for Excel/Google Sheets)
@@ -76,6 +83,7 @@ validateImportData(data: any): ValidationResult
   - Disabled states for invalid selections
 
 #### User Experience:
+
 - Keyboard shortcut: `Ctrl+E` / `Cmd+E`
 - Menu access: File > Export Data
 - Real-time validation
@@ -86,6 +94,7 @@ validateImportData(data: any): ValidationResult
 **File**: `src/renderer/src/components/ImportDialog.tsx`
 
 #### UI Components:
+
 - ✅ **File Selection**:
   - Native file picker (JSON files)
   - Shows selected filename
@@ -102,6 +111,7 @@ validateImportData(data: any): ValidationResult
   - Warning messages for issues
 
 #### User Experience:
+
 - Keyboard shortcut: `Ctrl+I` / `Cmd+I`
 - Menu access: File > Import Data
 - Validation runs automatically
@@ -111,28 +121,31 @@ validateImportData(data: any): ValidationResult
 ### 5. IPC Integration
 
 **Files**:
+
 - `src/main/ipc/handlers.ts`
 - `src/preload/index.ts`
 - `src/preload/index.d.ts`
 
 #### Added Handlers:
+
 ```typescript
 // Export handlers
-"export:toJSON"
-"export:toCSV"
-"export:createBackup"
-"export:listBackups"
+"export:toJSON";
+"export:toCSV";
+"export:createBackup";
+"export:listBackups";
 
 // Import handlers
-"import:fromJSON"
-"import:restoreBackup"
-"import:selectFile"
+"import:fromJSON";
+"import:restoreBackup";
+"import:selectFile";
 ```
 
 #### IPC Events:
+
 ```typescript
-"open-export-dialog" // Triggered by menu/keyboard
-"open-import-dialog" // Triggered by menu/keyboard
+"open-export-dialog"; // Triggered by menu/keyboard
+"open-import-dialog"; // Triggered by menu/keyboard
 ```
 
 ### 6. Application Integration
@@ -140,6 +153,7 @@ validateImportData(data: any): ValidationResult
 **File**: `src/renderer/src/App.tsx`
 
 #### Integration Points:
+
 - ✅ Export dialog state management
 - ✅ Import dialog state management
 - ✅ Event listeners for menu actions
@@ -148,6 +162,7 @@ validateImportData(data: any): ValidationResult
 **File**: `src/main/index.ts`
 
 #### Menu Integration:
+
 - ✅ File > Export Data (`Ctrl+E`)
 - ✅ File > Import Data (`Ctrl+I`)
 - ✅ Menu click handlers to trigger dialogs
@@ -158,38 +173,38 @@ validateImportData(data: any): ValidationResult
 
 ```json
 {
-  "version": "1.0",
-  "exportDate": "2025-10-13T16:50:00.000Z",
-  "projects": [
-    {
-      "_id": "507f1f77bcf86cd799439011",
-      "name": "Project Name",
-      "description": "Description",
-      "color": "#3b82f6",
-      "icon": "📋",
-      "createdAt": "2025-10-01T00:00:00.000Z",
-      "updatedAt": "2025-10-13T00:00:00.000Z"
-    }
-  ],
-  "tasks": [
-    {
-      "_id": "507f1f77bcf86cd799439012",
-      "projectId": "507f1f77bcf86cd799439011",
-      "title": "Task Title",
-      "description": "Task description",
-      "status": "todo",
-      "priority": "high",
-      "labels": ["label1", "label2"],
-      "dueDate": "2025-10-20T00:00:00.000Z",
-      "createdAt": "2025-10-10T00:00:00.000Z",
-      "updatedAt": "2025-10-13T00:00:00.000Z"
-    }
-  ],
-  "metadata": {
-    "totalProjects": 1,
-    "totalTasks": 1,
-    "scope": "all"
-  }
+	"version": "1.0",
+	"exportDate": "2025-10-13T16:50:00.000Z",
+	"projects": [
+		{
+			"_id": "507f1f77bcf86cd799439011",
+			"name": "Project Name",
+			"description": "Description",
+			"color": "#3b82f6",
+			"icon": "📋",
+			"createdAt": "2025-10-01T00:00:00.000Z",
+			"updatedAt": "2025-10-13T00:00:00.000Z"
+		}
+	],
+	"tasks": [
+		{
+			"_id": "507f1f77bcf86cd799439012",
+			"projectId": "507f1f77bcf86cd799439011",
+			"title": "Task Title",
+			"description": "Task description",
+			"status": "todo",
+			"priority": "high",
+			"labels": ["label1", "label2"],
+			"dueDate": "2025-10-20T00:00:00.000Z",
+			"createdAt": "2025-10-10T00:00:00.000Z",
+			"updatedAt": "2025-10-13T00:00:00.000Z"
+		}
+	],
+	"metadata": {
+		"totalProjects": 1,
+		"totalTasks": 1,
+		"scope": "all"
+	}
 }
 ```
 
@@ -203,6 +218,7 @@ ID,Title,Description,Status,Priority,Project,Due Date,Created At,Updated At,Arch
 ## Testing Scenarios
 
 ### Export Testing
+
 1. ✅ Export all projects to JSON
 2. ✅ Export single project to JSON
 3. ✅ Export to CSV format
@@ -212,6 +228,7 @@ ID,Title,Description,Status,Priority,Project,Due Date,Created At,Updated At,Arch
 7. ✅ Test with no project selected
 
 ### Import Testing
+
 1. ✅ Import valid JSON file (merge mode)
 2. ✅ Import valid JSON file (replace mode)
 3. ✅ Validate file before import
@@ -221,6 +238,7 @@ ID,Title,Description,Status,Priority,Project,Due Date,Created At,Updated At,Arch
 7. ✅ Verify data reload after import
 
 ### Backup Testing
+
 1. ⏳ Create manual backup
 2. ⏳ List available backups
 3. ⏳ Restore from backup
@@ -229,6 +247,7 @@ ID,Title,Description,Status,Priority,Project,Due Date,Created At,Updated At,Arch
 ## Known Issues & Limitations
 
 ### Current Limitations:
+
 1. **CSV Export**: Only exports tasks (not projects)
 2. **CSV Import**: Not yet implemented (JSON only)
 3. **Automatic Backups**: Not yet scheduled (manual only)
@@ -236,6 +255,7 @@ ID,Title,Description,Status,Priority,Project,Due Date,Created At,Updated At,Arch
 5. **Backup UI**: No UI to manage backups (list/restore/delete)
 
 ### Future Enhancements:
+
 1. Add automatic backup scheduling (daily/weekly)
 2. Add backup management dialog
 3. Add CSV import support
@@ -270,6 +290,7 @@ ID,Title,Description,Status,Priority,Project,Due Date,Created At,Updated At,Arch
 ### Creating Backups
 
 Currently available via API:
+
 ```typescript
 await window.api.export.createBackup();
 ```
@@ -279,15 +300,18 @@ Backup files saved to: `{userData}/backups/taskboard-backup-{timestamp}.json`
 ## Technical Details
 
 ### Dependencies Added
+
 - None (uses existing dependencies)
 
 ### New UI Components
+
 - `ExportDialog.tsx` - Export dialog component
 - `ImportDialog.tsx` - Import dialog component
 - `radio-group.tsx` - Radio button component (shadcn/ui)
 - `checkbox.tsx` - Checkbox component (shadcn/ui)
 
 ### Security Considerations
+
 - ✅ File paths validated
 - ✅ JSON parsing with try-catch
 - ✅ Data validation before import
@@ -295,6 +319,7 @@ Backup files saved to: `{userData}/backups/taskboard-backup-{timestamp}.json`
 - ✅ Error handling for all operations
 
 ### Performance Considerations
+
 - Large exports handled synchronously (may block for very large datasets)
 - Validation runs before import (prevents partial imports)
 - ID remapping for merge mode (prevents conflicts)
@@ -302,17 +327,20 @@ Backup files saved to: `{userData}/backups/taskboard-backup-{timestamp}.json`
 ## Code Quality
 
 ### Type Safety
+
 - ✅ Full TypeScript types for all interfaces
 - ✅ Proper error handling with typed results
 - ⚠️ Some `any` types used (can be improved)
 
 ### Error Handling
+
 - ✅ Try-catch blocks in all async functions
 - ✅ Detailed error messages
 - ✅ Toast notifications for user feedback
 - ✅ Error boundaries catch React errors
 
 ### Testing Status
+
 - ⏳ Manual testing completed
 - ❌ Unit tests not yet written
 - ❌ Integration tests not yet written
@@ -323,6 +351,7 @@ Backup files saved to: `{userData}/backups/taskboard-backup-{timestamp}.json`
 ### Phase 9 Progress: **80% Complete**
 
 #### Completed (80%):
+
 - ✅ Export service implementation
 - ✅ Import service implementation
 - ✅ Export dialog UI
@@ -335,6 +364,7 @@ Backup files saved to: `{userData}/backups/taskboard-backup-{timestamp}.json`
 - ✅ Toast notifications
 
 #### Remaining (20%):
+
 - ⏳ Automatic backup scheduling
 - ⏳ Backup management UI
 - ⏳ CSV import support
@@ -366,6 +396,7 @@ Backup files saved to: `{userData}/backups/taskboard-backup-{timestamp}.json`
 ## Conclusion
 
 Phase 9 successfully implements the core data export and import functionality. Users can now:
+
 - Export their data to JSON or CSV
 - Import data from JSON files
 - Validate data before importing

@@ -40,7 +40,7 @@ export function TaskDialog({
 	open,
 	onOpenChange,
 	task,
-	projectId,
+	projectId: _projectId,
 	onSubmit,
 }: TaskDialogProps): React.JSX.Element {
 	const {

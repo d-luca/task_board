@@ -8,7 +8,6 @@ import { ExportDialog } from "./components/ExportDialog";
 import { ImportDialog } from "./components/ImportDialog";
 import { EmptyState } from "./components/EmptyState";
 import { KanbanBoard } from "./components/KanbanBoard";
-import { KanbanBoardSkeleton } from "./components/skeletons/KanbanBoardSkeleton";
 import { Button } from "./components/ui/button";
 import {
 	DropdownMenu,
@@ -31,8 +30,6 @@ function App(): React.JSX.Element {
 	const {
 		projects,
 		currentProjectId,
-		loadingProjects,
-		loadingTasks,
 		createProject,
 		createTask,
 		updateTask,
