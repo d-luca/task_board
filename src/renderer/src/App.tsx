@@ -6,12 +6,34 @@ import { ProjectDialog } from "./components/ProjectDialog";
 import { TaskDialog } from "./components/TaskDialog";
 import { EmptyState } from "./components/EmptyState";
 import { KanbanBoard } from "./components/KanbanBoard";
+import { Button } from "./components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu";
+import { MoreVertical, Edit, Archive, Trash2 } from "lucide-react";
 import { useStore } from "./store/useStore";
+import type { Task } from "./types/task";
 
 function App(): React.JSX.Element {
 	const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 	const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-	const { projects, currentProjectId, createProject, createTask, getCurrentProject } = useStore();
+	const [editingTask, setEditingTask] = useState<Task | null>(null);
+	const [editingProject, setEditingProject] = useState(false);
+	const {
+		projects,
+		currentProjectId,
+		createProject,
+		createTask,
+		updateTask,
+		updateProject,
+		archiveProject,
+		deleteProject,
+		getCurrentProject,
+	} = useStore();
 
 	const currentProject = getCurrentProject();
 
@@ -21,7 +43,12 @@ function App(): React.JSX.Element {
 		color?: string;
 		icon?: string;
 	}) => {
-		await createProject(data);
+		if (editingProject && currentProject) {
+			await updateProject(currentProject._id, data);
+			setEditingProject(false);
+		} else {
+			await createProject(data);
+		}
 	};
 
 	const handleCreateTask = async (data: {
@@ -42,15 +69,55 @@ function App(): React.JSX.Element {
 					.filter((l) => l.length > 0)
 			: [];
 
-		await createTask({
-			projectId: currentProjectId,
-			title: data.title,
-			description: data.description,
-			status: data.status,
-			priority: data.priority,
-			labels,
-			dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
-		});
+		if (editingTask) {
+			await updateTask(editingTask._id, {
+				title: data.title,
+				description: data.description,
+				status: data.status,
+				priority: data.priority,
+				labels,
+				dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
+			});
+			setEditingTask(null);
+		} else {
+			await createTask({
+				projectId: currentProjectId,
+				title: data.title,
+				description: data.description,
+				status: data.status,
+				priority: data.priority,
+				labels,
+				dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
+			});
+		}
+	};
+
+	const handleEditTask = (task: Task): void => {
+		setEditingTask(task);
+		setTaskDialogOpen(true);
+	};
+
+	const handleEditProject = (): void => {
+		setEditingProject(true);
+		setProjectDialogOpen(true);
+	};
+
+	const handleArchiveProject = async (): Promise<void> => {
+		if (!currentProject) return;
+		if (window.confirm(`Archive project "${currentProject.name}"?`)) {
+			await archiveProject(currentProject._id);
+		}
+	};
+
+	const handleDeleteProject = async (): Promise<void> => {
+		if (!currentProject) return;
+		if (
+			window.confirm(
+				`Delete project "${currentProject.name}"? This will also delete all tasks in this project.`,
+			)
+		) {
+			await deleteProject(currentProject._id);
+		}
 	};
 
 	return (
@@ -68,29 +135,71 @@ function App(): React.JSX.Element {
 					<EmptyState type="no-project-selected" />
 				) : (
 					<div className="container mx-auto flex h-full flex-col p-8">
-						<div className="mb-6">
-							<h1 className="flex items-center gap-3 text-3xl font-bold">
-								<span>{currentProject?.icon || "📋"}</span>
-								<span>{currentProject?.name}</span>
-							</h1>
-							{currentProject?.description && (
-								<p className="text-muted-foreground mt-2">{currentProject.description}</p>
-							)}
+						<div className="mb-6 flex items-start justify-between">
+							<div>
+								<h1 className="flex items-center gap-3 text-3xl font-bold">
+									<span>{currentProject?.icon || "📋"}</span>
+									<span>{currentProject?.name}</span>
+								</h1>
+								{currentProject?.description && (
+									<p className="text-muted-foreground mt-2">{currentProject.description}</p>
+								)}
+							</div>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="ghost" size="icon">
+										<MoreVertical className="h-4 w-4" />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end">
+									<DropdownMenuItem onClick={handleEditProject}>
+										<Edit className="mr-2 h-4 w-4" />
+										Edit Project
+									</DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem onClick={handleArchiveProject}>
+										<Archive className="mr-2 h-4 w-4" />
+										Archive Project
+									</DropdownMenuItem>
+									<DropdownMenuItem onClick={handleDeleteProject} className="text-destructive">
+										<Trash2 className="mr-2 h-4 w-4" />
+										Delete Project
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						</div>
 
-						<KanbanBoard onCreateTask={() => setTaskDialogOpen(true)} />
+						<KanbanBoard
+							onCreateTask={() => {
+								setEditingTask(null);
+								setTaskDialogOpen(true);
+							}}
+							onEditTask={handleEditTask}
+						/>
 					</div>
 				)}
 			</AppLayout>
 
 			<ProjectDialog
 				open={projectDialogOpen}
-				onOpenChange={setProjectDialogOpen}
+				onOpenChange={(open) => {
+					setProjectDialogOpen(open);
+					if (!open) setEditingProject(false);
+				}}
+				project={editingProject ? currentProject : undefined}
 				onSubmit={handleCreateProject}
 			/>
 
 			{currentProjectId && (
-				<TaskDialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen} onSubmit={handleCreateTask} />
+				<TaskDialog
+					open={taskDialogOpen}
+					onOpenChange={(open) => {
+						setTaskDialogOpen(open);
+						if (!open) setEditingTask(null);
+					}}
+					task={editingTask || undefined}
+					onSubmit={handleCreateTask}
+				/>
 			)}
 		</>
 	);

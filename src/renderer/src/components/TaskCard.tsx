@@ -1,13 +1,16 @@
 import { useDraggable } from "@dnd-kit/core";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Calendar, CheckSquare, AlertCircle } from "lucide-react";
+import { Button } from "./ui/button";
+import { Calendar, CheckSquare, AlertCircle, Trash2 } from "lucide-react";
 import type { Task } from "../types/task";
 import { cn } from "../lib/utils";
 
 interface TaskCardProps {
 	task: Task;
 	isDragging?: boolean;
+	onEdit?: (task: Task) => void;
+	onDelete?: (taskId: string) => void;
 }
 
 const PRIORITY_CONFIG = {
@@ -16,7 +19,7 @@ const PRIORITY_CONFIG = {
 	high: { label: "High", color: "bg-red-500" },
 };
 
-export function TaskCard({ task, isDragging }: TaskCardProps): React.JSX.Element {
+export function TaskCard({ task, isDragging, onEdit, onDelete }: TaskCardProps): React.JSX.Element {
 	const { attributes, listeners, setNodeRef, transform } = useDraggable({
 		id: task._id,
 	});
@@ -32,14 +35,30 @@ export function TaskCard({ task, isDragging }: TaskCardProps): React.JSX.Element
 	const completedItems = task.checklist?.filter((item) => item.completed).length || 0;
 	const totalItems = task.checklist?.length || 0;
 
+	const handleCardClick = (e: React.MouseEvent): void => {
+		// Don't trigger edit if clicking delete button
+		if ((e.target as HTMLElement).closest("button")) {
+			return;
+		}
+		onEdit?.(task);
+	};
+
+	const handleDelete = (e: React.MouseEvent): void => {
+		e.stopPropagation();
+		if (window.confirm(`Delete task "${task.title}"?`)) {
+			onDelete?.(task._id);
+		}
+	};
+
 	return (
 		<Card
 			ref={setNodeRef}
 			style={style}
 			{...attributes}
 			{...listeners}
+			onClick={handleCardClick}
 			className={cn(
-				"cursor-grab active:cursor-grabbing",
+				"group cursor-grab active:cursor-grabbing",
 				isDragging && "opacity-50",
 				"transition-shadow hover:shadow-md",
 			)}
@@ -47,7 +66,17 @@ export function TaskCard({ task, isDragging }: TaskCardProps): React.JSX.Element
 			<CardHeader className="p-3 pb-2">
 				<div className="flex items-start justify-between gap-2">
 					<h4 className="line-clamp-2 text-sm leading-tight font-medium">{task.title}</h4>
-					<div className={cn("h-2 w-2 flex-shrink-0 rounded-full", priorityConfig.color)} />
+					<div className="flex items-center gap-1">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100"
+							onClick={handleDelete}
+						>
+							<Trash2 className="h-3 w-3" />
+						</Button>
+						<div className={cn("h-2 w-2 flex-shrink-0 rounded-full", priorityConfig.color)} />
+					</div>
 				</div>
 			</CardHeader>
 			<CardContent className="p-3 pt-0">

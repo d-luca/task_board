@@ -8,9 +8,18 @@ interface TaskColumnProps {
 	title: string;
 	color: string;
 	tasks: Task[];
+	onEditTask: (task: Task) => void;
+	onDeleteTask: (taskId: string) => Promise<void>;
 }
 
-export function TaskColumn({ id, title, color, tasks }: TaskColumnProps): React.JSX.Element {
+export function TaskColumn({
+	id,
+	title,
+	color,
+	tasks,
+	onEditTask,
+	onDeleteTask,
+}: TaskColumnProps): React.JSX.Element {
 	const { setNodeRef, isOver } = useDroppable({
 		id,
 	});
@@ -29,7 +38,9 @@ export function TaskColumn({ id, title, color, tasks }: TaskColumnProps): React.
 						No tasks yet
 					</div>
 				) : (
-					tasks.map((task) => <TaskCard key={task._id} task={task} />)
+					tasks.map((task) => (
+						<TaskCard key={task._id} task={task} onEdit={onEditTask} onDelete={onDeleteTask} />
+					))
 				)}
 			</div>
 		</div>

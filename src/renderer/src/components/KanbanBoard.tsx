@@ -24,10 +24,11 @@ const COLUMNS = [
 
 interface KanbanBoardProps {
 	onCreateTask: () => void;
+	onEditTask: (task: Task) => void;
 }
 
-export function KanbanBoard({ onCreateTask }: KanbanBoardProps): React.JSX.Element {
-	const { tasks, loadingTasks, updateTaskPosition } = useStore();
+export function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardProps): React.JSX.Element {
+	const { tasks, loadingTasks, updateTaskPosition, deleteTask } = useStore();
 	const [activeTask, setActiveTask] = useState<Task | null>(null);
 
 	const sensors = useSensors(
@@ -72,6 +73,14 @@ export function KanbanBoard({ onCreateTask }: KanbanBoardProps): React.JSX.Eleme
 		return tasks.filter((task) => task.status === status).sort((a, b) => a.position - b.position);
 	};
 
+	const handleDeleteTask = async (taskId: string): Promise<void> => {
+		try {
+			await deleteTask(taskId);
+		} catch (error) {
+			console.error("Failed to delete task:", error);
+		}
+	};
+
 	if (loadingTasks) {
 		return (
 			<div className="flex h-full items-center justify-center">
@@ -99,6 +108,8 @@ export function KanbanBoard({ onCreateTask }: KanbanBoardProps): React.JSX.Eleme
 							title={column.title}
 							color={column.color}
 							tasks={getTasksByStatus(column.id)}
+							onEditTask={onEditTask}
+							onDeleteTask={handleDeleteTask}
 						/>
 					))}
 				</div>
