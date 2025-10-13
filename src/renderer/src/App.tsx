@@ -1,50 +1,65 @@
+import { useState } from "react";
 import { AppLayout } from "./components/layout/AppLayout";
 import { Sidebar } from "./components/layout/Sidebar";
-import { Button } from "./components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
+import { ProjectList } from "./components/ProjectList";
+import { ProjectDialog } from "./components/ProjectDialog";
+import { EmptyState } from "./components/EmptyState";
+import { useStore } from "./store/useStore";
 
 function App(): React.JSX.Element {
+	const [projectDialogOpen, setProjectDialogOpen] = useState(false);
+	const { projects, currentProjectId, createProject, getCurrentProject } = useStore();
+
+	const currentProject = getCurrentProject();
+
+	const handleCreateProject = async (data: {
+		name: string;
+		description?: string;
+		color?: string;
+		icon?: string;
+	}) => {
+		await createProject(data);
+	};
+
 	return (
-		<AppLayout
-			sidebar={
-				<Sidebar>
-					<div className="space-y-2">
-						<h2 className="text-muted-foreground text-sm font-semibold">Projects</h2>
-						<Button variant="outline" className="w-full justify-start">
-							📁 Getting Started
-						</Button>
+		<>
+			<AppLayout
+				sidebar={
+					<Sidebar>
+						<ProjectList onCreateProject={() => setProjectDialogOpen(true)} />
+					</Sidebar>
+				}
+			>
+				{projects.length === 0 ? (
+					<EmptyState type="no-projects" onCreateProject={() => setProjectDialogOpen(true)} />
+				) : !currentProjectId ? (
+					<EmptyState type="no-project-selected" />
+				) : (
+					<div className="container mx-auto p-8">
+						<div className="mb-6">
+							<h1 className="flex items-center gap-3 text-3xl font-bold">
+								<span>{currentProject?.icon || "📋"}</span>
+								<span>{currentProject?.name}</span>
+							</h1>
+							{currentProject?.description && (
+								<p className="text-muted-foreground mt-2">{currentProject.description}</p>
+							)}
+						</div>
+
+						{/* TODO: Kanban board will go here in Phase 4 */}
+						<div className="rounded-lg border-2 border-dashed p-12 text-center">
+							<p className="text-muted-foreground">Kanban board coming in Phase 4...</p>
+						</div>
 					</div>
-				</Sidebar>
-			}
-		>
-			<div className="container mx-auto p-8">
-				<Card>
-					<CardHeader>
-						<CardTitle>Welcome to Task Board Manager</CardTitle>
-						<CardDescription>Phase 1 Setup Complete! 🎉</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<div className="space-y-2">
-							<h3 className="font-semibold">✅ Completed Setup:</h3>
-							<ul className="text-muted-foreground list-inside list-disc space-y-1 text-sm">
-								<li>Electron + React + TypeScript + Vite</li>
-								<li>Tailwind CSS 4 configured</li>
-								<li>shadcn/ui components installed</li>
-								<li>Project structure created</li>
-								<li>Type definitions added</li>
-								<li>Utility functions ready</li>
-							</ul>
-						</div>
-						<div className="flex gap-2">
-							<Button>Primary Button</Button>
-							<Button variant="secondary">Secondary</Button>
-							<Button variant="outline">Outline</Button>
-							<Button variant="destructive">Destructive</Button>
-						</div>
-					</CardContent>
-				</Card>
-			</div>
-		</AppLayout>
+				)}
+			</AppLayout>
+
+			<ProjectDialog
+				open={projectDialogOpen}
+				onOpenChange={setProjectDialogOpen}
+				onSubmit={handleCreateProject}
+			/>
+		</>
 	);
 }
 

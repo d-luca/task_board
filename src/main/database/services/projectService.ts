@@ -5,7 +5,9 @@ export const projectService = {
 		try {
 			const project = new Project(data);
 			const saved = await project.save();
-			return saved.toObject();
+			const obj = saved.toObject();
+			// Ensure _id is a string for IPC serialization
+			return { ...obj, _id: obj._id.toString() } as any;
 		} catch (error) {
 			console.error("Error creating project:", error);
 			throw error;
@@ -15,8 +17,9 @@ export const projectService = {
 	async findAll(includeArchived = false): Promise<IProject[]> {
 		try {
 			const query = includeArchived ? {} : { isArchived: false };
-			// @ts-expect-error - lean() returns plain object, perfect for IPC
-			return await Project.find(query).sort({ updatedAt: -1 }).lean().exec();
+			const projects = await Project.find(query).sort({ updatedAt: -1 }).lean().exec();
+			// Ensure _id is a string for IPC serialization
+			return projects.map((p: any) => ({ ...p, _id: p._id.toString() })) as any;
 		} catch (error) {
 			console.error("Error fetching projects:", error);
 			throw error;
@@ -25,8 +28,10 @@ export const projectService = {
 
 	async findById(id: string): Promise<IProject | null> {
 		try {
-			// @ts-expect-error - lean() returns plain object, perfect for IPC
-			return await Project.findById(id).lean().exec();
+			const project = await Project.findById(id).lean().exec();
+			if (!project) return null;
+			// Ensure _id is a string for IPC serialization
+			return { ...project, _id: (project._id as any).toString() } as any;
 		} catch (error) {
 			console.error("Error fetching project by id:", error);
 			throw error;
@@ -35,23 +40,21 @@ export const projectService = {
 
 	async update(id: string, data: Partial<IProject>): Promise<IProject | null> {
 		try {
-			// @ts-expect-error - lean() returns plain object, perfect for IPC
-			return await Project.findByIdAndUpdate(id, data, {
-				new: true,
-				runValidators: true,
-			})
-				.lean()
-				.exec();
+			const project = await Project.findByIdAndUpdate(id, data, { new: true }).lean().exec();
+			if (!project) return null;
+			// Ensure _id is a string for IPC serialization
+			return { ...project, _id: (project._id as any).toString() } as any;
 		} catch (error) {
 			console.error("Error updating project:", error);
 			throw error;
 		}
 	},
-
 	async delete(id: string): Promise<IProject | null> {
 		try {
-			// @ts-expect-error - lean() returns plain object, perfect for IPC
-			return await Project.findByIdAndDelete(id).lean().exec();
+			const project = await Project.findByIdAndDelete(id).lean().exec();
+			if (!project) return null;
+			// Ensure _id is a string for IPC serialization
+			return { ...project, _id: (project._id as any).toString() } as any;
 		} catch (error) {
 			console.error("Error deleting project:", error);
 			throw error;
@@ -60,8 +63,10 @@ export const projectService = {
 
 	async archive(id: string): Promise<IProject | null> {
 		try {
-			// @ts-expect-error - lean() returns plain object, perfect for IPC
-			return await Project.findByIdAndUpdate(id, { isArchived: true }, { new: true }).lean().exec();
+			const project = await Project.findByIdAndUpdate(id, { isArchived: true }, { new: true }).lean().exec();
+			if (!project) return null;
+			// Ensure _id is a string for IPC serialization
+			return { ...project, _id: (project._id as any).toString() } as any;
 		} catch (error) {
 			console.error("Error archiving project:", error);
 			throw error;
@@ -70,8 +75,10 @@ export const projectService = {
 
 	async unarchive(id: string): Promise<IProject | null> {
 		try {
-			// @ts-expect-error - lean() returns plain object, perfect for IPC
-			return await Project.findByIdAndUpdate(id, { isArchived: false }, { new: true }).lean().exec();
+			const project = await Project.findByIdAndUpdate(id, { isArchived: false }, { new: true }).lean().exec();
+			if (!project) return null;
+			// Ensure _id is a string for IPC serialization
+			return { ...project, _id: (project._id as any).toString() } as any;
 		} catch (error) {
 			console.error("Error unarchiving project:", error);
 			throw error;
@@ -80,14 +87,15 @@ export const projectService = {
 
 	async search(searchTerm: string): Promise<IProject[]> {
 		try {
-			// @ts-expect-error - lean() returns plain object, perfect for IPC
-			return await Project.find({
+			const projects = await Project.find({
 				$text: { $search: searchTerm },
 				isArchived: false,
 			})
 				.sort({ score: { $meta: "textScore" } })
 				.lean()
 				.exec();
+			// Ensure _id is a string for IPC serialization
+			return projects.map((p: any) => ({ ...p, _id: p._id.toString() })) as any;
 		} catch (error) {
 			console.error("Error searching projects:", error);
 			throw error;
