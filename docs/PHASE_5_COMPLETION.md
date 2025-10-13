@@ -19,12 +19,14 @@ Phase 5 adds comprehensive editing and management capabilities for tasks and pro
 **Feature**: Click any task card to edit its details
 
 **Implementation**:
+
 - Added `onClick` handler to TaskCard
 - Opens TaskDialog in edit mode with pre-filled values
 - Prevents edit trigger when clicking delete button
 - Maintains drag-and-drop functionality
 
 **User Flow**:
+
 ```
 User clicks task card
   → handleCardClick() filters out button clicks
@@ -44,12 +46,14 @@ User clicks task card
 **Feature**: Delete button on task cards (visible on hover)
 
 **Implementation**:
+
 - Added delete button with trash icon to TaskCard header
 - Button appears on card hover (group-hover)
 - Confirmation dialog before deletion
 - Stops event propagation to prevent edit trigger
 
 **UI/UX**:
+
 - Trash icon button (3x3px icon, 5x5px button)
 - Opacity 0 → 100 on hover (smooth transition)
 - Red trash icon for danger indication
@@ -62,12 +66,14 @@ User clicks task card
 **Feature**: Edit current project from project header
 
 **Implementation**:
+
 - Added dropdown menu to project header (⋮ icon)
 - "Edit Project" option opens ProjectDialog
 - Pre-fills form with current project data
 - Updates project via API on submit
 
 **Menu Items**:
+
 1. Edit Project (✏️)
 2. --- separator ---
 3. Archive Project (📦)
@@ -80,12 +86,14 @@ User clicks task card
 **Feature**: Dropdown menu for project management actions
 
 **Implementation**:
+
 - MoreVertical icon button in project header
 - shadcn/ui DropdownMenu component
 - Three actions: Edit, Archive, Delete
 - Confirmation dialogs for destructive actions
 
 **Actions**:
+
 - **Edit**: Opens ProjectDialog with current data
 - **Archive**: Hides project from active list (with confirmation)
 - **Delete**: Permanently removes project and all its tasks (with strong confirmation message)
@@ -97,22 +105,25 @@ User clicks task card
 ### TaskCard.tsx
 
 **New Props**:
+
 ```typescript
 interface TaskCardProps {
-  task: Task;
-  isDragging?: boolean;
-  onEdit?: (task: Task) => void;        // NEW
-  onDelete?: (taskId: string) => void;  // NEW
+	task: Task;
+	isDragging?: boolean;
+	onEdit?: (task: Task) => void; // NEW
+	onDelete?: (taskId: string) => void; // NEW
 }
 ```
 
 **New Features**:
+
 - Click handler for edit
 - Delete button with hover effect
 - Event propagation control
 - Group hover styling
 
 **Imports Added**:
+
 - `Button` from ui/button
 - `Trash2` icon from lucide-react
 
@@ -121,18 +132,20 @@ interface TaskCardProps {
 ### TaskColumn.tsx
 
 **New Props**:
+
 ```typescript
 interface TaskColumnProps {
-  id: string;
-  title: string;
-  color: string;
-  tasks: Task[];
-  onEditTask: (task: Task) => void;          // NEW
-  onDeleteTask: (taskId: string) => Promise<void>;  // NEW
+	id: string;
+	title: string;
+	color: string;
+	tasks: Task[];
+	onEditTask: (task: Task) => void; // NEW
+	onDeleteTask: (taskId: string) => Promise<void>; // NEW
 }
 ```
 
 **Changes**:
+
 - Passes `onEdit` and `onDelete` to each TaskCard
 - Simple prop forwarding pattern
 
@@ -141,21 +154,24 @@ interface TaskColumnProps {
 ### KanbanBoard.tsx
 
 **New Props**:
+
 ```typescript
 interface KanbanBoardProps {
-  onCreateTask: () => void;
-  onEditTask: (task: Task) => void;  // NEW
+	onCreateTask: () => void;
+	onEditTask: (task: Task) => void; // NEW
 }
 ```
 
 **New Methods**:
+
 ```typescript
 const handleDeleteTask = async (taskId: string): Promise<void> => {
-  await deleteTask(taskId);
+	await deleteTask(taskId);
 };
 ```
 
 **Changes**:
+
 - Destructures `deleteTask` from store
 - Passes callbacks to TaskColumn
 - Handles task deletion errors
@@ -165,12 +181,14 @@ const handleDeleteTask = async (taskId: string): Promise<void> => {
 ### App.tsx
 
 **New State**:
+
 ```typescript
 const [editingTask, setEditingTask] = useState<Task | null>(null);
 const [editingProject, setEditingProject] = useState(false);
 ```
 
 **New Store Methods Used**:
+
 - `updateTask(id, data)`
 - `updateProject(id, data)`
 - `archiveProject(id)`
@@ -197,40 +215,44 @@ const [editingProject, setEditingProject] = useState(false);
 **Updated Handlers**:
 
 1. **handleCreateProject()** - Now handles both create and edit:
+
 ```typescript
 if (editingProject && currentProject) {
-  await updateProject(currentProject._id, data);
-  setEditingProject(false);
+	await updateProject(currentProject._id, data);
+	setEditingProject(false);
 } else {
-  await createProject(data);
+	await createProject(data);
 }
 ```
 
 2. **handleCreateTask()** - Now handles both create and edit:
+
 ```typescript
 if (editingTask) {
-  await updateTask(editingTask._id, data);
-  setEditingTask(null);
+	await updateTask(editingTask._id, data);
+	setEditingTask(null);
 } else {
-  await createTask(data);
+	await createTask(data);
 }
 ```
 
 **New UI Elements**:
+
 - Project header wrapped in flex layout
 - DropdownMenu with MoreVertical trigger
 - Three menu items with icons
 - Delete item in destructive color
 
 **New Imports**:
+
 ```typescript
 import { Button } from "./components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu";
 import { MoreVertical, Edit, Archive, Trash2 } from "lucide-react";
 import type { Task } from "./types/task";
@@ -241,12 +263,14 @@ import type { Task } from "./types/task";
 ## Dialog Enhancements
 
 ### TaskDialog
+
 - Already supported edit mode via `task` prop
 - Form auto-populates when task is provided
 - Title changes: "Create New Task" vs "Edit Task"
 - Button text changes: "Create Task" vs "Update Task"
 
 ### ProjectDialog
+
 - Already supported edit mode via `project` prop
 - Form auto-populates when project is provided
 - Title changes: "Create New Project" vs "Edit Project"
@@ -257,6 +281,7 @@ import type { Task } from "./types/task";
 ## User Experience Improvements
 
 ### Visual Feedback
+
 - ✅ Hover effects on task cards
 - ✅ Delete button appears smoothly on hover
 - ✅ Confirmation dialogs prevent accidents
@@ -264,12 +289,14 @@ import type { Task } from "./types/task";
 - ✅ Icon-based UI for quick recognition
 
 ### State Management
+
 - ✅ Editing state properly reset on dialog close
 - ✅ Current project data passed to edit forms
 - ✅ Task data passed to edit forms
 - ✅ Store updates reflected immediately
 
 ### Error Handling
+
 - ✅ Try-catch blocks in delete handler
 - ✅ Console error logging
 - ✅ Graceful failure handling
@@ -279,6 +306,7 @@ import type { Task } from "./types/task";
 ## Testing Checklist
 
 ### Task Editing
+
 - [ ] Click a task card
 - [ ] Verify dialog opens with task data pre-filled
 - [ ] Edit title, description, status, priority
@@ -288,6 +316,7 @@ import type { Task } from "./types/task";
 - [ ] Verify changes persist after refresh
 
 ### Task Deletion
+
 - [ ] Hover over task card
 - [ ] Verify delete button appears
 - [ ] Click delete button
@@ -297,6 +326,7 @@ import type { Task } from "./types/task";
 - [ ] Verify task removed from MongoDB
 
 ### Project Editing
+
 - [ ] Click ⋮ menu in project header
 - [ ] Click "Edit Project"
 - [ ] Verify dialog opens with project data
@@ -307,6 +337,7 @@ import type { Task } from "./types/task";
 - [ ] Verify changes persist after refresh
 
 ### Project Archiving
+
 - [ ] Click ⋮ menu in project header
 - [ ] Click "Archive Project"
 - [ ] Verify confirmation dialog
@@ -317,6 +348,7 @@ import type { Task } from "./types/task";
 - [ ] Can still view/edit archived project
 
 ### Project Deletion
+
 - [ ] Click ⋮ menu in project header
 - [ ] Click "Delete Project"
 - [ ] Verify strong confirmation message
@@ -326,6 +358,7 @@ import type { Task } from "./types/task";
 - [ ] Verify cannot undo deletion
 
 ### Edge Cases
+
 - [ ] Delete a task while dragging (should cancel drag)
 - [ ] Edit task then cancel (changes not saved)
 - [ ] Delete only task in column (shows empty state)
@@ -339,10 +372,12 @@ import type { Task } from "./types/task";
 All operations use existing IPC handlers and services:
 
 **Task Operations**:
+
 - `window.api.task.update(id, data)` → `taskService.update()`
 - `window.api.task.delete(id)` → `taskService.delete()`
 
 **Project Operations**:
+
 - `window.api.project.update(id, data)` → `projectService.update()`
 - `window.api.project.archive(id)` → `projectService.archive()`
 - `window.api.project.delete(id)` → `projectService.delete()`
@@ -354,6 +389,7 @@ All services properly serialize ObjectIds to strings for IPC.
 ## Files Modified
 
 ### Modified:
+
 - `src/renderer/src/components/TaskCard.tsx`
   - Added onEdit and onDelete props
   - Added click handler and delete button
@@ -392,6 +428,7 @@ All services properly serialize ObjectIds to strings for IPC.
 ## Next Steps (Future Phases)
 
 ### Phase 6: Polish & Advanced Features
+
 1. **Custom Confirmation Dialogs**: Replace native confirm() with shadcn/ui AlertDialog
 2. **Undo/Redo**: Implement action history
 3. **Task Archiving**: Archive instead of delete
@@ -400,6 +437,7 @@ All services properly serialize ObjectIds to strings for IPC.
 6. **Keyboard Shortcuts**: Quick actions via keyboard
 
 ### Phase 7: Additional Features
+
 1. **Task Comments**: Add discussion threads
 2. **Task Attachments**: Upload files
 3. **Checklist Management**: Edit checklist items

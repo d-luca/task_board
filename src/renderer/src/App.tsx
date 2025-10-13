@@ -6,6 +6,7 @@ import { ProjectDialog } from "./components/ProjectDialog";
 import { TaskDialog } from "./components/TaskDialog";
 import { EmptyState } from "./components/EmptyState";
 import { KanbanBoard } from "./components/KanbanBoard";
+import { KanbanBoardSkeleton } from "./components/skeletons/KanbanBoardSkeleton";
 import { Button } from "./components/ui/button";
 import {
 	DropdownMenu,
@@ -26,6 +27,8 @@ function App(): React.JSX.Element {
 	const {
 		projects,
 		currentProjectId,
+		loadingProjects,
+		loadingTasks,
 		createProject,
 		createTask,
 		updateTask,
