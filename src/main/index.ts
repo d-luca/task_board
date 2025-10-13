@@ -1,17 +1,255 @@
-import { app, shell, BrowserWindow } from "electron";
+import { app, shell, BrowserWindow, Tray, Menu, nativeImage, globalShortcut } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 import { connectDatabase, disconnectDatabase } from "./database/connection";
 import { setupIpcHandlers } from "./ipc/handlers";
+import * as fs from "fs";
+
+let mainWindow: BrowserWindow | null = null;
+let tray: Tray | null = null;
+let isQuitting = false;
+
+// Path for storing window state
+const windowStateFile = join(app.getPath("userData"), "window-state.json");
+
+interface WindowState {
+	width: number;
+	height: number;
+	x?: number;
+	y?: number;
+	isMaximized: boolean;
+}
+
+// Load window state from file
+function loadWindowState(): WindowState {
+	try {
+		if (fs.existsSync(windowStateFile)) {
+			const data = fs.readFileSync(windowStateFile, "utf-8");
+			return JSON.parse(data);
+		}
+	} catch (error) {
+		console.error("Error loading window state:", error);
+	}
+	// Default window state
+	return {
+		width: 1200,
+		height: 800,
+		isMaximized: false,
+	};
+}
+
+// Save window state to file
+function saveWindowState(): void {
+	if (!mainWindow) return;
+
+	try {
+		const bounds = mainWindow.getBounds();
+		const state: WindowState = {
+			width: bounds.width,
+			height: bounds.height,
+			x: bounds.x,
+			y: bounds.y,
+			isMaximized: mainWindow.isMaximized(),
+		};
+		fs.writeFileSync(windowStateFile, JSON.stringify(state, null, 2));
+	} catch (error) {
+		console.error("Error saving window state:", error);
+	}
+}
+
+function createTray(): void {
+	// Create tray icon
+	const trayIcon = nativeImage.createFromPath(icon);
+	tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
+
+	// Create tray menu
+	const contextMenu = Menu.buildFromTemplate([
+		{
+			label: "Show App",
+			click: () => {
+				if (mainWindow) {
+					mainWindow.show();
+					mainWindow.focus();
+				}
+			},
+		},
+		{ type: "separator" },
+		{
+			label: "New Task",
+			accelerator: "CmdOrCtrl+N",
+			click: () => {
+				if (mainWindow) {
+					mainWindow.show();
+					mainWindow.focus();
+					mainWindow.webContents.send("open-task-dialog");
+				}
+			},
+		},
+		{
+			label: "New Project",
+			accelerator: "CmdOrCtrl+Shift+N",
+			click: () => {
+				if (mainWindow) {
+					mainWindow.show();
+					mainWindow.focus();
+					mainWindow.webContents.send("open-project-dialog");
+				}
+			},
+		},
+		{ type: "separator" },
+		{
+			label: "Quit",
+			accelerator: "CmdOrCtrl+Q",
+			click: () => {
+				app.quit();
+			},
+		},
+	]);
+
+	tray.setToolTip("Task Board Manager");
+	tray.setContextMenu(contextMenu);
+
+	// Show window on tray icon click
+	tray.on("click", () => {
+		if (mainWindow) {
+			if (mainWindow.isVisible()) {
+				mainWindow.hide();
+			} else {
+				mainWindow.show();
+				mainWindow.focus();
+			}
+		}
+	});
+}
+
+function createApplicationMenu(): void {
+	const template: Electron.MenuItemConstructorOptions[] = [
+		{
+			label: "File",
+			submenu: [
+				{
+					label: "New Project",
+					accelerator: "CmdOrCtrl+Shift+N",
+					click: () => {
+						mainWindow?.webContents.send("open-project-dialog");
+					},
+				},
+				{
+					label: "New Task",
+					accelerator: "CmdOrCtrl+N",
+					click: () => {
+						mainWindow?.webContents.send("open-task-dialog");
+					},
+				},
+				{ type: "separator" },
+				{
+					label: "Quit",
+					accelerator: "CmdOrCtrl+Q",
+					click: () => {
+						app.quit();
+					},
+				},
+			],
+		},
+		{
+			label: "Edit",
+			submenu: [
+				{ role: "undo" },
+				{ role: "redo" },
+				{ type: "separator" },
+				{ role: "cut" },
+				{ role: "copy" },
+				{ role: "paste" },
+				{ role: "delete" },
+				{ type: "separator" },
+				{ role: "selectAll" },
+			],
+		},
+		{
+			label: "View",
+			submenu: [
+				{ role: "reload" },
+				{ role: "forceReload" },
+				{ role: "toggleDevTools" },
+				{ type: "separator" },
+				{ role: "resetZoom" },
+				{ role: "zoomIn" },
+				{ role: "zoomOut" },
+				{ type: "separator" },
+				{ role: "togglefullscreen" },
+			],
+		},
+		{
+			label: "Window",
+			submenu: [
+				{ role: "minimize" },
+				{ role: "zoom" },
+				{ type: "separator" },
+				{
+					label: "Hide to Tray",
+					accelerator: "CmdOrCtrl+H",
+					click: () => {
+						mainWindow?.hide();
+					},
+				},
+			],
+		},
+		{
+			label: "Help",
+			submenu: [
+				{
+					label: "Learn More",
+					click: async () => {
+						await shell.openExternal("https://electronjs.org");
+					},
+				},
+				{
+					label: "About",
+					click: () => {
+						const aboutMessage = `Task Board Manager\nVersion: ${app.getVersion()}\n\nA desktop application for managing tasks and projects.`;
+						if (mainWindow) {
+							// You could show a custom dialog here
+							console.log(aboutMessage);
+						}
+					},
+				},
+			],
+		},
+	];
+
+	const menu = Menu.buildFromTemplate(template);
+	Menu.setApplicationMenu(menu);
+}
+
+function registerGlobalShortcuts(): void {
+	// Register global shortcuts
+	globalShortcut.register("CmdOrCtrl+Shift+T", () => {
+		if (mainWindow) {
+			if (mainWindow.isVisible()) {
+				mainWindow.hide();
+			} else {
+				mainWindow.show();
+				mainWindow.focus();
+			}
+		}
+	});
+
+	console.log("Global shortcuts registered");
+}
 
 function createWindow(): void {
+	// Load saved window state
+	const windowState = loadWindowState();
+
 	// Create the browser window.
-	const mainWindow = new BrowserWindow({
-		width: 900,
-		height: 670,
+	mainWindow = new BrowserWindow({
+		width: windowState.width,
+		height: windowState.height,
+		x: windowState.x,
+		y: windowState.y,
 		show: false,
-		autoHideMenuBar: true,
+		autoHideMenuBar: false, // Show menu bar
 		...(process.platform === "linux" ? { icon } : {}),
 		webPreferences: {
 			preload: join(__dirname, "../preload/index.js"),
@@ -19,12 +257,30 @@ function createWindow(): void {
 		},
 	});
 
+	// Restore maximized state
+	if (windowState.isMaximized) {
+		mainWindow.maximize();
+	}
+
 	mainWindow.on("ready-to-show", () => {
-		mainWindow.show();
+		mainWindow?.show();
 		// Open DevTools in development
 		if (is.dev) {
-			mainWindow.webContents.openDevTools();
+			mainWindow?.webContents.openDevTools();
 		}
+	});
+
+	// Save window state when resized or moved
+	mainWindow.on("resize", saveWindowState);
+	mainWindow.on("move", saveWindowState);
+
+	// Handle close event - minimize to tray instead of quitting
+	mainWindow.on("close", (event) => {
+		if (!isQuitting) {
+			event.preventDefault();
+			mainWindow?.hide();
+		}
+		return false;
 	});
 
 	mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -66,6 +322,15 @@ app.whenReady().then(async () => {
 	// Setup IPC handlers for database operations
 	setupIpcHandlers();
 
+	// Create application menu
+	createApplicationMenu();
+
+	// Register global shortcuts
+	registerGlobalShortcuts();
+
+	// Create system tray
+	createTray();
+
 	createWindow();
 
 	app.on("activate", function () {
@@ -79,16 +344,16 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", async () => {
-	if (process.platform !== "darwin") {
-		// Disconnect from database before quitting
-		await disconnectDatabase();
-		app.quit();
-	}
+	// Don't quit, just hide to tray
+	// App will quit when user selects Quit from tray menu
 });
 
 // Handle database cleanup on app quit
 app.on("before-quit", async () => {
+	isQuitting = true;
 	await disconnectDatabase();
+	// Unregister global shortcuts
+	globalShortcut.unregisterAll();
 });
 
 // In this file you can include the rest of your app's specific main process

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "./components/layout/AppLayout";
 import { Sidebar } from "./components/layout/Sidebar";
 import { ProjectList } from "./components/ProjectList";
@@ -39,6 +39,24 @@ function App(): React.JSX.Element {
 	} = useStore();
 
 	const currentProject = getCurrentProject();
+
+	// Listen for menu/tray triggered events
+	useEffect(() => {
+		const unsubscribeTask = window.api.onOpenTaskDialog(() => {
+			setEditingTask(null);
+			setTaskDialogOpen(true);
+		});
+
+		const unsubscribeProject = window.api.onOpenProjectDialog(() => {
+			setEditingProject(false);
+			setProjectDialogOpen(true);
+		});
+
+		return () => {
+			unsubscribeTask();
+			unsubscribeProject();
+		};
+	}, []);
 
 	const handleCreateProject = async (data: {
 		name: string;

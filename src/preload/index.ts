@@ -32,6 +32,15 @@ const api = {
 		search: (projectId: string, searchTerm: string) =>
 			ipcRenderer.invoke("task:search", projectId, searchTerm),
 	},
+	// System events - listen for menu/tray actions
+	onOpenTaskDialog: (callback: () => void) => {
+		ipcRenderer.on("open-task-dialog", callback);
+		return () => ipcRenderer.removeListener("open-task-dialog", callback);
+	},
+	onOpenProjectDialog: (callback: () => void) => {
+		ipcRenderer.on("open-project-dialog", callback);
+		return () => ipcRenderer.removeListener("open-project-dialog", callback);
+	},
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

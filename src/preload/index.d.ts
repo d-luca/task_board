@@ -27,6 +27,8 @@ interface TaskAPI {
 interface API {
 	project: ProjectAPI;
 	task: TaskAPI;
+	onOpenTaskDialog: (callback: () => void) => () => void;
+	onOpenProjectDialog: (callback: () => void) => () => void;
 }
 
 declare global {
