@@ -27,6 +27,7 @@
 ### 1. Main Process (Electron - Node.js)
 
 **Responsibilities:**
+
 - Application lifecycle management
 - Window creation and management
 - Database connection and operations
@@ -53,6 +54,7 @@ src/main/
 ### 2. Preload Script (IPC Bridge)
 
 **Responsibilities:**
+
 - Expose secure APIs to renderer process
 - Bridge between main and renderer processes
 - Type-safe IPC communication
@@ -73,6 +75,7 @@ window.api = {
 ### 3. Renderer Process (React Application)
 
 **Responsibilities:**
+
 - User interface rendering
 - User interaction handling
 - State management
@@ -211,7 +214,7 @@ projectStore = {
   currentProject: Project | null
   isLoading: boolean
   error: string | null
-  
+
   // Actions
   setProjects()
   setCurrentProject()
@@ -233,7 +236,7 @@ taskStore = {
   filters: FilterOptions
   isLoading: boolean
   error: string | null
-  
+
   // Actions
   setTasks()
   addTask()
@@ -453,4 +456,4 @@ Source Code
 
 ---
 
-*This architecture provides a scalable, maintainable, and secure foundation for the Multi-Project Task Board Manager.*
+_This architecture provides a scalable, maintainable, and secure foundation for the Multi-Project Task Board Manager._

@@ -382,4 +382,4 @@ By completing this project, you will learn:
 
 ---
 
-*This project serves as a comprehensive learning experience for modern desktop application development using React, Electron, and MongoDB, with a focus on multi-project task board management.*
+_This project serves as a comprehensive learning experience for modern desktop application development using React, Electron, and MongoDB, with a focus on multi-project task board management._

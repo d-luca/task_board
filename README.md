@@ -81,6 +81,7 @@ pnpm build:linux
 ## 🏗️ Technology Stack
 
 ### Frontend
+
 - **React 18+** - Modern UI library with hooks
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
@@ -90,15 +91,18 @@ pnpm build:linux
 - **React Hook Form + Zod** - Form validation
 
 ### Desktop Framework
+
 - **Electron** - Cross-platform desktop framework
 - **Electron Builder** - Packaging and distribution
 
 ### Backend & Database
+
 - **MongoDB** - Document database
 - **Mongoose** - MongoDB ODM
 - **Node.js** - JavaScript runtime
 
 ### Development Tools
+
 - **Vite** - Fast build tool
 - **pnpm** - Efficient package manager
 - **ESLint** - Code linting
@@ -137,18 +141,21 @@ task_board/
 ## 🎯 Key Features Details
 
 ### Multi-Project Management
+
 - Create and manage multiple independent task boards
 - Quick project switching with keyboard shortcuts
 - Project customization (colors, icons, settings)
 - Archive completed projects
 
 ### Task Board
+
 - Kanban-style board with drag-and-drop
 - Three default columns: To Do, In Progress, Done
 - Visual indicators for priority and due dates
 - Task filtering and search within projects
 
 ### Task Management
+
 - Rich task details with descriptions
 - Priority levels (High, Medium, Low)
 - Due dates with notifications
@@ -157,6 +164,7 @@ task_board/
 - Task archiving
 
 ### Desktop Integration
+
 - System tray integration
 - Native notifications
 - Keyboard shortcuts
@@ -205,6 +213,7 @@ pnpm format           # Format code with Prettier
 ## 🤝 Contributing
 
 This is a learning project. Feel free to:
+
 - Fork the repository
 - Create feature branches
 - Submit pull requests
@@ -218,6 +227,7 @@ MIT License - feel free to use this project for learning and development.
 ## 🎓 Learning Objectives
 
 By completing this project, you will learn:
+
 - Modern React patterns with TypeScript
 - Electron desktop app development
 - MongoDB integration and data modeling
