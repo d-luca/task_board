@@ -3,12 +3,15 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { Sidebar } from "./components/layout/Sidebar";
 import { ProjectList } from "./components/ProjectList";
 import { ProjectDialog } from "./components/ProjectDialog";
+import { TaskDialog } from "./components/TaskDialog";
 import { EmptyState } from "./components/EmptyState";
+import { KanbanBoard } from "./components/KanbanBoard";
 import { useStore } from "./store/useStore";
 
 function App(): React.JSX.Element {
 	const [projectDialogOpen, setProjectDialogOpen] = useState(false);
-	const { projects, currentProjectId, createProject, getCurrentProject } = useStore();
+	const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+	const { projects, currentProjectId, createProject, createTask, getCurrentProject } = useStore();
 
 	const currentProject = getCurrentProject();
 
@@ -19,6 +22,35 @@ function App(): React.JSX.Element {
 		icon?: string;
 	}) => {
 		await createProject(data);
+	};
+
+	const handleCreateTask = async (data: {
+		title: string;
+		description?: string;
+		status: "todo" | "in-progress" | "done";
+		priority: "low" | "medium" | "high";
+		labels?: string;
+		dueDate?: string;
+	}) => {
+		if (!currentProjectId) return;
+
+		// Parse labels from comma-separated string
+		const labels = data.labels
+			? data.labels
+					.split(",")
+					.map((l) => l.trim())
+					.filter((l) => l.length > 0)
+			: [];
+
+		await createTask({
+			projectId: currentProjectId,
+			title: data.title,
+			description: data.description,
+			status: data.status,
+			priority: data.priority,
+			labels,
+			dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
+		});
 	};
 
 	return (
@@ -35,7 +67,7 @@ function App(): React.JSX.Element {
 				) : !currentProjectId ? (
 					<EmptyState type="no-project-selected" />
 				) : (
-					<div className="container mx-auto p-8">
+					<div className="container mx-auto flex h-full flex-col p-8">
 						<div className="mb-6">
 							<h1 className="flex items-center gap-3 text-3xl font-bold">
 								<span>{currentProject?.icon || "📋"}</span>
@@ -46,10 +78,7 @@ function App(): React.JSX.Element {
 							)}
 						</div>
 
-						{/* TODO: Kanban board will go here in Phase 4 */}
-						<div className="rounded-lg border-2 border-dashed p-12 text-center">
-							<p className="text-muted-foreground">Kanban board coming in Phase 4...</p>
-						</div>
+						<KanbanBoard onCreateTask={() => setTaskDialogOpen(true)} />
 					</div>
 				)}
 			</AppLayout>
@@ -59,6 +88,10 @@ function App(): React.JSX.Element {
 				onOpenChange={setProjectDialogOpen}
 				onSubmit={handleCreateProject}
 			/>
+
+			{currentProjectId && (
+				<TaskDialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen} onSubmit={handleCreateTask} />
+			)}
 		</>
 	);
 }
