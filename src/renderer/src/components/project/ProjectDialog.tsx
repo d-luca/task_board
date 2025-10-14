@@ -9,12 +9,15 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import type { Project } from "../types/project";
+} from "../ui/dialog";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import type { Project } from "../../types/project";
+import { IconSelector } from "./IconSelector";
+import { ColorSelector } from "./ColorSelector";
+import { DEFAULT_COLORS, DEFAULT_ICONS } from "./constants";
 
 const projectSchema = z.object({
 	name: z.string().min(1, "Project name is required").max(100, "Name must be less than 100 characters"),
@@ -35,19 +38,6 @@ interface ProjectDialogProps {
 	onSubmit: (data: ProjectFormData) => Promise<void>;
 }
 
-const defaultColors = [
-	"#3b82f6", // blue
-	"#ef4444", // red
-	"#10b981", // green
-	"#f59e0b", // amber
-	"#8b5cf6", // purple
-	"#ec4899", // pink
-	"#06b6d4", // cyan
-	"#f97316", // orange
-];
-
-const defaultIcons = ["📋", "📁", "💼", "🎯", "🚀", "⭐", "🔥", "💡"];
-
 export function ProjectDialog({ open, onOpenChange, project, onSubmit }: ProjectDialogProps): JSX.Element {
 	const {
 		register,
@@ -66,7 +56,6 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
 		},
 	});
 
-	// Reset form when project changes or dialog opens
 	useEffect(() => {
 		if (open) {
 			if (project) {
@@ -110,7 +99,6 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
 				</DialogHeader>
 
 				<form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
-					{/* Project Name */}
 					<div className="space-y-2">
 						<Label htmlFor="name">
 							Project Name <span className="text-destructive">*</span>
@@ -119,7 +107,6 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
 						{errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
 					</div>
 
-					{/* Description */}
 					<div className="space-y-2">
 						<Label htmlFor="description">Description</Label>
 						<Textarea
@@ -131,43 +118,18 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
 						{errors.description && <p className="text-destructive text-sm">{errors.description.message}</p>}
 					</div>
 
-					{/* Icon Selector */}
-					<div className="space-y-2">
-						<Label>Icon</Label>
-						<div className="flex flex-wrap gap-2">
-							{defaultIcons.map((icon) => (
-								<button
-									key={icon}
-									type="button"
-									onClick={() => setValue("icon", icon)}
-									className={`hover:bg-accent h-10 w-10 rounded-lg border-2 text-xl transition-all ${
-										selectedIcon === icon ? "border-primary bg-accent scale-110" : "border-transparent"
-									}`}
-								>
-									{icon}
-								</button>
-							))}
-						</div>
-					</div>
+					<IconSelector
+						selectedIcon={selectedIcon || "📋"}
+						icons={DEFAULT_ICONS}
+						onIconChange={(icon) => setValue("icon", icon)}
+					/>
 
-					{/* Color Selector */}
-					<div className="space-y-2">
-						<Label>Color</Label>
-						<div className="flex flex-wrap gap-2">
-							{defaultColors.map((color) => (
-								<button
-									key={color}
-									type="button"
-									onClick={() => setValue("color", color)}
-									className={`h-10 w-10 rounded-lg border-2 transition-all ${
-										selectedColor === color ? "border-foreground scale-110" : "border-transparent"
-									}`}
-									style={{ backgroundColor: color }}
-								/>
-							))}
-						</div>
-						{errors.color && <p className="text-destructive text-sm">{errors.color.message}</p>}
-					</div>
+					<ColorSelector
+						selectedColor={selectedColor || "#3b82f6"}
+						colors={DEFAULT_COLORS}
+						onColorChange={(color) => setValue("color", color)}
+					/>
+					{errors.color && <p className="text-destructive text-sm">{errors.color.message}</p>}
 
 					<DialogFooter>
 						<Button

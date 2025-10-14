@@ -24,16 +24,46 @@ interface TaskAPI {
 	search: (projectId: string, searchTerm: string) => Promise<unknown>;
 }
 
+interface ExportOptions {
+	format: "json" | "csv";
+	scope: "all" | "single-project" | "selected-tasks";
+	projectId?: string;
+	taskIds?: string[];
+	includeArchived?: boolean;
+}
+
+interface ExportResult {
+	success: boolean;
+	filePath?: string;
+	error?: string;
+}
+
 interface ExportAPI {
-	toJSON: (options: unknown) => Promise<unknown>;
-	toCSV: (options: unknown) => Promise<unknown>;
-	createBackup: () => Promise<unknown>;
-	listBackups: () => Promise<unknown>;
+	toJSON: (options: ExportOptions) => Promise<ExportResult>;
+	toCSV: (options: ExportOptions) => Promise<ExportResult>;
+	createBackup: () => Promise<ExportResult>;
+	listBackups: () => Promise<string[]>;
+}
+
+interface ImportOptions {
+	filePath: string;
+	mode: "merge" | "replace";
+	validateOnly?: boolean;
+}
+
+interface ImportResult {
+	success: boolean;
+	imported?: {
+		projects: number;
+		tasks: number;
+	};
+	errors?: string[];
+	warnings?: string[];
 }
 
 interface ImportAPI {
-	fromJSON: (options: unknown) => Promise<unknown>;
-	restoreBackup: (backupPath: string) => Promise<unknown>;
+	fromJSON: (options: ImportOptions) => Promise<ImportResult>;
+	restoreBackup: (backupPath: string) => Promise<ImportResult>;
 	selectFile: () => Promise<string | null>;
 }
 
