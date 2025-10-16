@@ -1,3 +1,5 @@
+import { TaskPriority } from "./task";
+
 export interface Project {
 	_id: string;
 	name: string;
@@ -7,7 +9,7 @@ export interface Project {
 	isArchived: boolean;
 	settings?: {
 		taskStatuses?: string[];
-		defaultPriority?: "low" | "medium" | "high";
+		defaultPriority?: TaskPriority;
 	};
 	createdAt: string;
 	updatedAt: string;
@@ -27,6 +29,6 @@ export interface UpdateProjectInput {
 	icon?: string;
 	settings?: {
 		taskStatuses?: string[];
-		defaultPriority?: "low" | "medium" | "high";
+		defaultPriority?: TaskPriority;
 	};
 }

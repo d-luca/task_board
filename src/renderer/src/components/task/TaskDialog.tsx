@@ -12,6 +12,7 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import type { Task } from "../../types/task";
+import { TaskStatus, TaskPriority } from "../../types/task";
 import { TaskBasicFields } from "./TaskBasicFields";
 import { TaskStatusPriority } from "./TaskStatusPriority";
 import { TaskMetadataFields } from "./TaskMetadataFields";
@@ -19,8 +20,8 @@ import { TaskMetadataFields } from "./TaskMetadataFields";
 const taskSchema = z.object({
 	title: z.string().min(1, "Title is required").max(200, "Title too long"),
 	description: z.string().max(1000, "Description too long").optional(),
-	status: z.enum(["todo", "in-progress", "done"]),
-	priority: z.enum(["low", "medium", "high"]),
+	status: z.nativeEnum(TaskStatus),
+	priority: z.nativeEnum(TaskPriority),
 	labels: z.string().optional(),
 	dueDate: z.string().optional(),
 });
@@ -54,8 +55,8 @@ export function TaskDialog({
 		defaultValues: {
 			title: "",
 			description: "",
-			status: "todo",
-			priority: "medium",
+			status: TaskStatus.TODO,
+			priority: TaskPriority.MEDIUM,
 			labels: "",
 			dueDate: "",
 		},
@@ -75,8 +76,8 @@ export function TaskDialog({
 			reset({
 				title: "",
 				description: "",
-				status: "todo",
-				priority: "medium",
+				status: TaskStatus.TODO,
+				priority: TaskPriority.MEDIUM,
 				labels: "",
 				dueDate: "",
 			});

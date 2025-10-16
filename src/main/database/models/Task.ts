@@ -1,12 +1,24 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export enum TaskStatus {
+	TODO = "todo",
+	IN_PROGRESS = "in-progress",
+	DONE = "done",
+}
+
+export enum TaskPriority {
+	LOW = "low",
+	MEDIUM = "medium",
+	HIGH = "high",
+}
+
 export interface ITask extends Document {
 	_id: string;
 	projectId: mongoose.Types.ObjectId;
 	title: string;
 	description?: string;
-	status: "todo" | "in-progress" | "done";
-	priority: "low" | "medium" | "high";
+	status: TaskStatus;
+	priority: TaskPriority;
 	labels?: string[];
 	dueDate?: Date;
 	checklist?: Array<{
@@ -41,14 +53,14 @@ const TaskSchema = new Schema<ITask>(
 		},
 		status: {
 			type: String,
-			enum: ["todo", "in-progress", "done"],
-			default: "todo",
+			enum: Object.values(TaskStatus),
+			default: TaskStatus.TODO,
 			index: true,
 		},
 		priority: {
 			type: String,
-			enum: ["low", "medium", "high"],
-			default: "medium",
+			enum: Object.values(TaskPriority),
+			default: TaskPriority.MEDIUM,
 		},
 		labels: {
 			type: [String],

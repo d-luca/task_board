@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { toast } from "sonner";
 import type { Project } from "../types/project";
 import type { Task } from "../types/task";
+import { TaskStatus, TaskPriority } from "../types/task";
 
 interface StoreState {
 	// Projects state
@@ -239,10 +240,10 @@ export const useStore = create<StoreState>((set, get) => ({
 			projectId: data.projectId || get().currentProjectId || "",
 			title: data.title || "New Task",
 			description: data.description || "",
-			status: data.status || "todo",
-			priority: data.priority || "medium",
+			status: data.status || TaskStatus.TODO,
+			priority: data.priority || TaskPriority.MEDIUM,
 			labels: data.labels || [],
-			position: get().tasks.filter((t) => t.status === (data.status || "todo")).length,
+			position: get().tasks.filter((t) => t.status === (data.status || TaskStatus.TODO)).length,
 			isArchived: false,
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),

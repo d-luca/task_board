@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { TaskStatus, TaskPriority } from "./Task";
 
 export interface IProject extends Document {
 	_id: string;
@@ -9,7 +10,7 @@ export interface IProject extends Document {
 	isArchived: boolean;
 	settings?: {
 		taskStatuses?: string[];
-		defaultPriority?: "low" | "medium" | "high";
+		defaultPriority?: TaskPriority;
 	};
 	createdAt: Date;
 	updatedAt: Date;
@@ -42,12 +43,12 @@ const ProjectSchema = new Schema<IProject>(
 		settings: {
 			taskStatuses: {
 				type: [String],
-				default: ["todo", "in-progress", "done"],
+				default: Object.values(TaskStatus),
 			},
 			defaultPriority: {
 				type: String,
-				enum: ["low", "medium", "high"],
-				default: "medium",
+				enum: Object.values(TaskPriority),
+				default: TaskPriority.MEDIUM,
 			},
 		},
 	},

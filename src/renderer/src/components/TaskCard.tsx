@@ -4,6 +4,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Calendar, CheckSquare, AlertCircle, Trash2 } from "lucide-react";
 import type { Task } from "../types/task";
+import { TaskPriority } from "../types/task";
 import { cn } from "../lib/utils";
 
 interface TaskCardProps {
@@ -13,10 +14,10 @@ interface TaskCardProps {
 	onDelete?: (taskId: string) => void;
 }
 
-const PRIORITY_CONFIG = {
-	low: { label: "Low", color: "bg-slate-500" },
-	medium: { label: "Medium", color: "bg-yellow-500" },
-	high: { label: "High", color: "bg-red-500" },
+const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string }> = {
+	[TaskPriority.LOW]: { label: "Low", color: "bg-slate-500" },
+	[TaskPriority.MEDIUM]: { label: "Medium", color: "bg-yellow-500" },
+	[TaskPriority.HIGH]: { label: "High", color: "bg-red-500" },
 };
 
 export function TaskCard({ task, isDragging, onEdit, onDelete }: TaskCardProps): React.JSX.Element {

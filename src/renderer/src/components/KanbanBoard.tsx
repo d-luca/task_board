@@ -13,13 +13,14 @@ import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import { useStore } from "../store/useStore";
 import type { Task } from "../types/task";
+import { TaskStatus } from "../types/task";
 import { TaskColumn } from "./TaskColumn";
 import { TaskCard } from "./TaskCard";
 
 const COLUMNS = [
-	{ id: "todo", title: "To Do", color: "bg-slate-500" },
-	{ id: "in-progress", title: "In Progress", color: "bg-blue-500" },
-	{ id: "done", title: "Done", color: "bg-green-500" },
+	{ id: TaskStatus.TODO, title: "To Do", color: "bg-slate-500" },
+	{ id: TaskStatus.IN_PROGRESS, title: "In Progress", color: "bg-blue-500" },
+	{ id: TaskStatus.DONE, title: "Done", color: "bg-green-500" },
 ] as const;
 
 interface KanbanBoardProps {
@@ -53,7 +54,7 @@ export function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardProps): Rea
 		if (!over) return;
 
 		const taskId = active.id as string;
-		const newStatus = over.id as string;
+		const newStatus = over.id as TaskStatus;
 
 		const task = tasks.find((t) => t._id === taskId);
 		if (!task || task.status === newStatus) return;
@@ -69,7 +70,7 @@ export function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardProps): Rea
 		}
 	};
 
-	const getTasksByStatus = (status: string): Task[] => {
+	const getTasksByStatus = (status: TaskStatus): Task[] => {
 		return tasks.filter((task) => task.status === status).sort((a, b) => a.position - b.position);
 	};
 
