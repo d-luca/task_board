@@ -9,13 +9,14 @@ import {
 	useSensors,
 } from "@dnd-kit/core";
 
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
-import { useStore } from "../store/useStore";
-import type { Task } from "../types/task";
-import { TaskStatus } from "../types/task";
-import { TaskColumn } from "./TaskColumn";
-import { TaskCard } from "./TaskCard";
+import { useStore } from "../../store/useStore";
+import type { Task } from "../../types/task";
+import { TaskStatus } from "../../types/task";
+import { TaskColumn } from "../TaskColumn";
+import { TaskCard } from "../TaskCard";
+import { KanbanBoardSkeleton } from "./KanbanBoardSkeleton";
 
 const COLUMNS = [
 	{ id: TaskStatus.TODO, title: "To Do", color: "bg-slate-500" },
@@ -83,11 +84,7 @@ export function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardProps): Rea
 	};
 
 	if (loadingTasks) {
-		return (
-			<div className="flex h-full items-center justify-center">
-				<p className="text-muted-foreground">Loading tasks...</p>
-			</div>
-		);
+		return <KanbanBoardSkeleton />;
 	}
 
 	return (

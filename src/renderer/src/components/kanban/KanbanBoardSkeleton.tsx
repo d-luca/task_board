@@ -1,6 +1,6 @@
 import { Card } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
-import { TaskCardSkeleton } from "./TaskCardSkeleton";
+import { TaskCardSkeleton } from "../task/TaskCardSkeleton";
 
 export function KanbanBoardSkeleton(): React.ReactElement {
 	return (

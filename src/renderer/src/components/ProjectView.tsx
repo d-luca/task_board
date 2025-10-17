@@ -7,7 +7,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { KanbanBoard } from "./KanbanBoard";
+import { KanbanBoard } from "./kanban";
 import { useStore } from "../store/useStore";
 import type { Project } from "../types/project";
 import type { Task } from "../types/task";

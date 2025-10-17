@@ -50,12 +50,21 @@ export const useStore = create<StoreState>((set, get) => ({
 	// Project actions
 	loadProjects: async () => {
 		set({ loadingProjects: true });
+		const startTime = Date.now();
 		try {
 			const { showArchivedProjects } = get();
 			const projects = (await window.api.project.getAll(showArchivedProjects)) as Project[];
+			// Ensure minimum 1 second loading to prevent skeleton blinking
+			const elapsed = Date.now() - startTime;
+			const delay = Math.max(0, 1000 - elapsed);
+			await new Promise((resolve) => setTimeout(resolve, delay));
 			set({ projects, loadingProjects: false });
 		} catch (error) {
 			console.error("Failed to load projects:", error);
+			// Still wait for minimum delay even on error
+			const elapsed = Date.now() - startTime;
+			const delay = Math.max(0, 1000 - elapsed);
+			await new Promise((resolve) => setTimeout(resolve, delay));
 			set({ loadingProjects: false });
 		}
 	},
@@ -223,11 +232,20 @@ export const useStore = create<StoreState>((set, get) => ({
 	// Task actions
 	loadTasks: async (projectId) => {
 		set({ loadingTasks: true });
+		const startTime = Date.now();
 		try {
 			const tasks = (await window.api.task.getByProject(projectId, false)) as Task[];
+			// Ensure minimum 1 second loading to prevent skeleton blinking
+			const elapsed = Date.now() - startTime;
+			const delay = Math.max(0, 1000 - elapsed);
+			await new Promise((resolve) => setTimeout(resolve, delay));
 			set({ tasks, loadingTasks: false });
 		} catch (error) {
 			console.error("Failed to load tasks:", error);
+			// Still wait for minimum delay even on error
+			const elapsed = Date.now() - startTime;
+			const delay = Math.max(0, 1000 - elapsed);
+			await new Promise((resolve) => setTimeout(resolve, delay));
 			set({ loadingTasks: false });
 		}
 	},
