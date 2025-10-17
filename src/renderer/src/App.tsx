@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, JSX } from "react";
 import { AppLayout } from "./components/layout/AppLayout";
 import { Sidebar } from "./components/layout/Sidebar";
-import { ProjectList } from "./components/ProjectList";
+import { ProjectList } from "./components/project-list";
 import { ProjectDialog } from "./components/project";
 import { TaskDialog } from "./components/task";
 import { ExportDialog } from "./components/export";
