@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, JSX } from "react";
 import { AppLayout } from "./components/layout/AppLayout";
 import { Sidebar } from "./components/layout/Sidebar";
 import { ProjectList } from "./components/ProjectList";
@@ -12,7 +12,7 @@ import { useStore } from "./store/useStore";
 import type { Task } from "./types/task";
 import { TaskStatus, TaskPriority } from "./types/task";
 
-function App(): React.JSX.Element {
+function App(): JSX.Element {
 	const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 	const [taskDialogOpen, setTaskDialogOpen] = useState(false);
 	const [exportDialogOpen, setExportDialogOpen] = useState(false);
