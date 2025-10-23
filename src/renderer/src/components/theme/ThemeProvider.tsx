@@ -2,7 +2,7 @@ import { createContext, JSX, useContext, useEffect, useState } from "react";
 import { ThemeEnum } from "./constants";
 
 interface ThemeProviderProps {
-	children: JSX.Element;
+	children: JSX.Element | JSX.Element[];
 	defaultTheme?: ThemeEnum;
 	storageKey?: string;
 }

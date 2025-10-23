@@ -1,7 +1,7 @@
 import { JSX } from "react";
 
 interface AppLayoutProps {
-	children: JSX.Element;
+	children: JSX.Element | JSX.Element[] | null;
 	sidebar?: JSX.Element;
 }
 
