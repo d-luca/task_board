@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { TaskCard } from "../../renderer/src/components/TaskCard";
-import { Task } from "../../renderer/src/types/task";
+import { Task, TaskPriority, TaskStatus } from "../../renderer/src/types/task";
 
 // Mock Lucide icons
 jest.mock("lucide-react", () => ({
@@ -25,8 +25,8 @@ describe("TaskCard Component", () => {
 		_id: "task-1",
 		title: "Test Task",
 		description: "Test Description",
-		status: "todo",
-		priority: "medium",
+		status: TaskStatus.TODO,
+		priority: TaskPriority.MEDIUM,
 		projectId: "project-1",
 		position: 0,
 		isArchived: false,
@@ -57,7 +57,7 @@ describe("TaskCard Component", () => {
 	it("displays high priority badge with correct styling", () => {
 		const highPriorityTask: Task = {
 			...mockTask,
-			priority: "high",
+			priority: TaskPriority.HIGH,
 		};
 
 		render(<TaskCard task={highPriorityTask} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
@@ -68,7 +68,7 @@ describe("TaskCard Component", () => {
 	it("displays low priority badge with correct styling", () => {
 		const lowPriorityTask: Task = {
 			...mockTask,
-			priority: "low",
+			priority: TaskPriority.LOW,
 		};
 
 		render(<TaskCard task={lowPriorityTask} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
