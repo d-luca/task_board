@@ -1,1 +1,1 @@
-export { Label } from "./Label1";
+export { Label } from "./Label";

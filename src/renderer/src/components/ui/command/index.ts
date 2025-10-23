@@ -1,4 +1,4 @@
-export { Command } from "./Command1";
+export { Command } from "./Command";
 export { CommandDialog } from "./CommandDialog";
 export { CommandInput } from "./CommandInput";
 export { CommandList } from "./CommandList";

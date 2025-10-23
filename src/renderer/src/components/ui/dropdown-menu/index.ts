@@ -1,4 +1,4 @@
-export { DropdownMenu } from "./DropdownMenu1";
+export { DropdownMenu } from "./DropdownMenu";
 export { DropdownMenuPortal } from "./DropdownMenuPortal";
 export { DropdownMenuTrigger } from "./DropdownMenuTrigger";
 export { DropdownMenuContent } from "./DropdownMenuContent";

@@ -1,4 +1,4 @@
-export { Dialog } from "./Dialog1";
+export { Dialog } from "./Dialog";
 export { DialogClose } from "./DialogClose";
 export { DialogContent } from "./DialogContent";
 export { DialogDescription } from "./DialogDescription";
