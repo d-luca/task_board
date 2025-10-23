@@ -1,4 +1,4 @@
-export { Card } from "./Card";
+export { Card } from "./Card1";
 export { CardHeader } from "./CardHeader";
 export { CardFooter } from "./CardFooter";
 export { CardTitle } from "./CardTitle";

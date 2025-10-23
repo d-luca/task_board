@@ -7,7 +7,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@renderer/components/ui/dialog";
-import { Command } from "./Command";
+import { Command } from "./Command1";
 
 export function CommandDialog({
 	title = "Command Palette",
