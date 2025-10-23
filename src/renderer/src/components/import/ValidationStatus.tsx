@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { ImportResult } from "./types";
 
@@ -10,7 +10,7 @@ interface ValidationStatusProps {
 export function ValidationStatus({
 	isValidating,
 	validationResult,
-}: ValidationStatusProps): ReactElement | null {
+}: ValidationStatusProps): JSX.Element | null {
 	if (isValidating) {
 		return (
 			<div className="bg-muted/50 flex items-center gap-2 rounded-lg border p-3">

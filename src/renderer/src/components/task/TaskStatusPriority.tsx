@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { TaskStatus, TaskPriority } from "../../types/task";
@@ -21,7 +21,7 @@ export function TaskStatusPriority({
 	statusError,
 	priorityError,
 	disabled,
-}: TaskStatusPriorityProps): ReactElement {
+}: TaskStatusPriorityProps): JSX.Element {
 	return (
 		<div className="grid grid-cols-2 gap-4">
 			<div className="space-y-2">

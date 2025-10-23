@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { FileJson } from "lucide-react";
@@ -9,7 +9,7 @@ interface FileSelectorProps {
 	disabled?: boolean;
 }
 
-export function FileSelector({ selectedFile, onSelectFile, disabled }: FileSelectorProps): ReactElement {
+export function FileSelector({ selectedFile, onSelectFile, disabled }: FileSelectorProps): JSX.Element {
 	return (
 		<div className="space-y-3">
 			<Label className="text-base font-semibold">Select File</Label>

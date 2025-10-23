@@ -1,20 +1,19 @@
-import { createContext, useContext, useEffect, useState } from "react";
-
-type Theme = "light" | "dark" | "system";
+import { createContext, JSX, useContext, useEffect, useState } from "react";
+import { ThemeEnum } from "./constants";
 
 interface ThemeProviderProps {
-	children: React.ReactNode;
-	defaultTheme?: Theme;
+	children: JSX.Element;
+	defaultTheme?: ThemeEnum;
 	storageKey?: string;
 }
 
 interface ThemeProviderState {
-	theme: Theme;
-	setTheme: (theme: Theme) => void;
+	theme: ThemeEnum;
+	setTheme: (theme: ThemeEnum) => void;
 }
 
 const initialState: ThemeProviderState = {
-	theme: "system",
+	theme: ThemeEnum.SYSTEM,
 	setTheme: () => null,
 };
 
@@ -22,12 +21,12 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
 	children,
-	defaultTheme = "system",
+	defaultTheme = ThemeEnum.SYSTEM,
 	storageKey = "task-board-theme",
 	...props
-}: ThemeProviderProps): React.ReactElement {
-	const [theme, setTheme] = useState<Theme>(
-		() => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+}: ThemeProviderProps): JSX.Element {
+	const [theme, setTheme] = useState<ThemeEnum>(
+		() => (localStorage.getItem(storageKey) as ThemeEnum) || defaultTheme,
 	);
 
 	useEffect(() => {
@@ -47,7 +46,7 @@ export function ThemeProvider({
 
 	const value = {
 		theme,
-		setTheme: (theme: Theme) => {
+		setTheme: (theme: ThemeEnum) => {
 			localStorage.setItem(storageKey, theme);
 			setTheme(theme);
 		},

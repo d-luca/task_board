@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { Label } from "../ui/label";
 import { cn } from "../../lib/utils";
 
@@ -8,7 +8,7 @@ interface ColorSelectorProps {
 	onColorChange: (color: string) => void;
 }
 
-export function ColorSelector({ selectedColor, colors, onColorChange }: ColorSelectorProps): ReactElement {
+export function ColorSelector({ selectedColor, colors, onColorChange }: ColorSelectorProps): JSX.Element {
 	return (
 		<div className="space-y-2">
 			<Label>Color</Label>

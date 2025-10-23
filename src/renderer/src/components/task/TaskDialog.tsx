@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,8 +20,8 @@ import { TaskMetadataFields } from "./TaskMetadataFields";
 const taskSchema = z.object({
 	title: z.string().min(1, "Title is required").max(200, "Title too long"),
 	description: z.string().max(1000, "Description too long").optional(),
-	status: z.nativeEnum(TaskStatus),
-	priority: z.nativeEnum(TaskPriority),
+	status: z.enum(TaskStatus),
+	priority: z.enum(TaskPriority),
 	labels: z.string().optional(),
 	dueDate: z.string().optional(),
 });
@@ -42,7 +42,7 @@ export function TaskDialog({
 	task,
 	projectId: _projectId, // eslint-disable-line @typescript-eslint/no-unused-vars
 	onSubmit,
-}: TaskDialogProps): React.JSX.Element {
+}: TaskDialogProps): JSX.Element {
 	const {
 		register,
 		handleSubmit,

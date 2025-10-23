@@ -1,2 +1,2 @@
-export { Calendar } from "./calendar";
+export { Calendar } from "./Calendar";
 export { CalendarDayButton } from "./CalendarDayButton";

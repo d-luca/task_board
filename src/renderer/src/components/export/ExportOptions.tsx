@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 
@@ -7,10 +7,7 @@ interface ExportOptionsProps {
 	onIncludeArchivedChange: (checked: boolean) => void;
 }
 
-export function ExportOptions({
-	includeArchived,
-	onIncludeArchivedChange,
-}: ExportOptionsProps): ReactElement {
+export function ExportOptions({ includeArchived, onIncludeArchivedChange }: ExportOptionsProps): JSX.Element {
 	return (
 		<div className="space-y-3">
 			<Label className="text-base font-semibold">Options</Label>

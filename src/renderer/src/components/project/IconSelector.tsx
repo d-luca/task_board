@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { Label } from "../ui/label";
 import { cn } from "../../lib/utils";
 
@@ -8,7 +8,7 @@ interface IconSelectorProps {
 	onIconChange: (icon: string) => void;
 }
 
-export function IconSelector({ selectedIcon, icons, onIconChange }: IconSelectorProps): ReactElement {
+export function IconSelector({ selectedIcon, icons, onIconChange }: IconSelectorProps): JSX.Element {
 	return (
 		<div className="space-y-2">
 			<Label>Icon</Label>

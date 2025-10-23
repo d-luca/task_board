@@ -1,11 +1,11 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { ExportScope } from "./types";
+import { ExportScopeEnum } from "./types";
 
 interface ScopeSelectorProps {
-	value: ExportScope;
-	onChange: (scope: ExportScope) => void;
+	value: ExportScopeEnum;
+	onChange: (scope: ExportScopeEnum) => void;
 	currentProjectId: string | null;
 	currentProjectName: string;
 }
@@ -15,11 +15,11 @@ export function ScopeSelector({
 	onChange,
 	currentProjectId,
 	currentProjectName,
-}: ScopeSelectorProps): ReactElement {
+}: ScopeSelectorProps): JSX.Element {
 	return (
 		<div className="space-y-3">
 			<Label className="text-base font-semibold">Export Scope</Label>
-			<RadioGroup value={value} onValueChange={(val) => onChange(val as ExportScope)}>
+			<RadioGroup value={value} onValueChange={(val) => onChange(val as ExportScopeEnum)}>
 				<div className="hover:bg-accent flex items-center space-x-2 rounded-lg border p-3">
 					<RadioGroupItem value="all" id="all" />
 					<Label htmlFor="all" className="flex-1 cursor-pointer">

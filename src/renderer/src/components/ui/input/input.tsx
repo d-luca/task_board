@@ -1,8 +1,7 @@
-import * as React from "react";
-
 import { cn } from "@renderer/lib/utils";
+import { ComponentProps, JSX } from "react";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">): React.JSX.Element {
+function Input({ className, type, ...props }: ComponentProps<"input">): JSX.Element {
 	return (
 		<input
 			type={type}

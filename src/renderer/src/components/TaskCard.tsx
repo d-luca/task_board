@@ -6,6 +6,7 @@ import { Calendar, CheckSquare, AlertCircle, Trash2 } from "lucide-react";
 import type { Task } from "../types/task";
 import { TaskPriority } from "../types/task";
 import { cn } from "../lib/utils";
+import { JSX } from "react";
 
 interface TaskCardProps {
 	task: Task;
@@ -20,7 +21,7 @@ const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string }> = 
 	[TaskPriority.HIGH]: { label: "High", color: "bg-red-500" },
 };
 
-export function TaskCard({ task, isDragging, onEdit, onDelete }: TaskCardProps): React.JSX.Element {
+export function TaskCard({ task, isDragging, onEdit, onDelete }: TaskCardProps): JSX.Element {
 	const { attributes, listeners, setNodeRef, transform } = useDraggable({
 		id: task._id,
 	});

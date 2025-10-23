@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { JSX, useState } from "react";
 import {
 	DndContext,
 	DragEndEvent,
@@ -29,7 +29,7 @@ interface KanbanBoardProps {
 	onEditTask: (task: Task) => void;
 }
 
-export function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardProps): React.JSX.Element {
+export function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardProps): JSX.Element {
 	const { tasks, loadingTasks, updateTaskPosition, deleteTask } = useStore();
 	const [activeTask, setActiveTask] = useState<Task | null>(null);
 

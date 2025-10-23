@@ -1,8 +1,8 @@
-import { JSX, ReactNode } from "react";
+import { JSX } from "react";
 
 interface AppLayoutProps {
-	children: ReactNode;
-	sidebar?: ReactNode;
+	children: JSX.Element;
+	sidebar?: JSX.Element;
 }
 
 export function AppLayout({ children, sidebar }: AppLayoutProps): JSX.Element {

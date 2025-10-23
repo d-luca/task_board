@@ -4,7 +4,7 @@ import "./assets/main.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { ThemeProvider } from "./components/ThemeProvider";
+import { ThemeProvider } from "./components/theme/ThemeProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Toaster } from "./components/ui/sonner";
 

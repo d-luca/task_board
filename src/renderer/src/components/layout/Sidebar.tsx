@@ -1,9 +1,9 @@
 import { JSX } from "react";
 import { ScrollArea } from "../ui/scroll-area";
-import { ThemeToggle } from "../ThemeToggle";
+import { ThemeToggle } from "../theme/ThemeToggle";
 
 interface SidebarProps {
-	children: React.ReactNode;
+	children: JSX.Element;
 }
 
 export function Sidebar({ children }: SidebarProps): JSX.Element {

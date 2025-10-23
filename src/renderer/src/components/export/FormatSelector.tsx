@@ -1,19 +1,19 @@
-import { ReactElement } from "react";
+import { JSX } from "react";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { FileJson, FileSpreadsheet } from "lucide-react";
-import { ExportFormat } from "./types";
+import { ExportFormatEnum } from "./types";
 
 interface FormatSelectorProps {
-	value: ExportFormat;
-	onChange: (format: ExportFormat) => void;
+	value: ExportFormatEnum;
+	onChange: (format: ExportFormatEnum) => void;
 }
 
-export function FormatSelector({ value, onChange }: FormatSelectorProps): ReactElement {
+export function FormatSelector({ value, onChange }: FormatSelectorProps): JSX.Element {
 	return (
 		<div className="space-y-3">
 			<Label className="text-base font-semibold">Export Format</Label>
-			<RadioGroup value={value} onValueChange={(val) => onChange(val as ExportFormat)}>
+			<RadioGroup value={value} onValueChange={(val) => onChange(val as ExportFormatEnum)}>
 				<div className="hover:bg-accent flex items-center space-x-2 rounded-lg border p-3">
 					<RadioGroupItem value="json" id="json" />
 					<Label htmlFor="json" className="flex flex-1 cursor-pointer items-center gap-2">

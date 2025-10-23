@@ -1,12 +1,10 @@
-export {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogOverlay,
-	DialogPortal,
-	DialogTitle,
-	DialogTrigger,
-} from "./dialog";
+export { Dialog } from "./Dialog";
+export { DialogClose } from "./DialogClose";
+export { DialogContent } from "./DialogContent";
+export { DialogDescription } from "./DialogDescription";
+export { DialogFooter } from "./DialogFooter";
+export { DialogHeader } from "./DialogHeader";
+export { DialogOverlay } from "./DialogOverlay";
+export { DialogPortal } from "./DialogPortal";
+export { DialogTitle } from "./DialogTitle";
+export { DialogTrigger } from "./DialogTrigger";

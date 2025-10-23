@@ -1,7 +1,8 @@
+import { JSX } from "react";
 import { Card } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
 
-export function TaskCardSkeleton(): React.ReactElement {
+export function TaskCardSkeleton(): JSX.Element {
 	return (
 		<Card className="p-4">
 			<div className="flex items-start justify-between gap-2">

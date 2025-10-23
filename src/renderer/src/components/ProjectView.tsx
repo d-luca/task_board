@@ -11,6 +11,7 @@ import { KanbanBoard } from "./kanban";
 import { useStore } from "../store/useStore";
 import type { Project } from "../types/project";
 import type { Task } from "../types/task";
+import { JSX } from "react";
 
 interface ProjectViewProps {
 	currentProject: Project;
@@ -24,7 +25,7 @@ export function ProjectView({
 	onOpenEditProjectDialog,
 	onCreateTask,
 	onEditTask,
-}: ProjectViewProps): React.JSX.Element {
+}: ProjectViewProps): JSX.Element {
 	const { archiveProject, deleteProject } = useStore();
 
 	const handleEditProject = (): void => {

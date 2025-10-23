@@ -1,6 +1,5 @@
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 import { cn } from "@renderer/lib/utils";
 import { badgeVariants } from "./badgeVariants";
 
@@ -9,7 +8,7 @@ function Badge({
 	variant,
 	asChild = false,
 	...props
-}: React.ComponentProps<"span"> &
+}: ComponentProps<"span"> &
 	import("class-variance-authority").VariantProps<typeof badgeVariants> & {
 		asChild?: boolean;
 	}): JSX.Element {

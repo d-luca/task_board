@@ -1,10 +1,10 @@
-import { ReactElement } from "react";
+import { InputHTMLAttributes, JSX } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 interface TaskMetadataFieldsProps {
-	labelsProps: React.InputHTMLAttributes<HTMLInputElement>;
-	dueDateProps: React.InputHTMLAttributes<HTMLInputElement>;
+	labelsProps: InputHTMLAttributes<HTMLInputElement>;
+	dueDateProps: InputHTMLAttributes<HTMLInputElement>;
 	labelsError?: string;
 	dueDateError?: string;
 	disabled?: boolean;
@@ -16,7 +16,7 @@ export function TaskMetadataFields({
 	labelsError,
 	dueDateError,
 	disabled,
-}: TaskMetadataFieldsProps): ReactElement {
+}: TaskMetadataFieldsProps): JSX.Element {
 	return (
 		<div className="grid grid-cols-2 gap-4">
 			<div className="space-y-2">

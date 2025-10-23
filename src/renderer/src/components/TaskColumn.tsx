@@ -2,6 +2,7 @@ import { useDroppable } from "@dnd-kit/core";
 import type { Task } from "../types/task";
 import { cn } from "../lib/utils";
 import { TaskCard } from "./TaskCard";
+import { JSX } from "react";
 
 interface TaskColumnProps {
 	id: string;
@@ -19,7 +20,7 @@ export function TaskColumn({
 	tasks,
 	onEditTask,
 	onDeleteTask,
-}: TaskColumnProps): React.JSX.Element {
+}: TaskColumnProps): JSX.Element {
 	const { setNodeRef, isOver } = useDroppable({
 		id,
 	});

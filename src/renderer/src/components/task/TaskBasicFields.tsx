@@ -1,11 +1,11 @@
-import { ReactElement } from "react";
+import { InputHTMLAttributes, JSX, TextareaHTMLAttributes } from "react";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 
 interface TaskBasicFieldsProps {
-	titleProps: React.InputHTMLAttributes<HTMLInputElement>;
-	descriptionProps: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+	titleProps: InputHTMLAttributes<HTMLInputElement>;
+	descriptionProps: TextareaHTMLAttributes<HTMLTextAreaElement>;
 	titleError?: string;
 	descriptionError?: string;
 	disabled?: boolean;
@@ -17,7 +17,7 @@ export function TaskBasicFields({
 	titleError,
 	descriptionError,
 	disabled,
-}: TaskBasicFieldsProps): ReactElement {
+}: TaskBasicFieldsProps): JSX.Element {
 	return (
 		<>
 			<div className="space-y-2">

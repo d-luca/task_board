@@ -1,10 +1,10 @@
-import { Component, ErrorInfo, ReactNode } from "react";
+import { Component, ErrorInfo, JSX } from "react";
 import { AlertCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
 interface Props {
-	children: ReactNode;
+	children: JSX.Element;
 }
 
 interface State {
@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
 		window.location.reload();
 	};
 
-	public render(): ReactNode {
+	public render(): JSX.Element {
 		if (this.state.hasError) {
 			return (
 				<div className="bg-background flex h-screen items-center justify-center p-4">

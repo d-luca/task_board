@@ -1,8 +1,11 @@
-export type ImportMode = "merge" | "replace";
+export enum ImportModeEnum {
+	MERGE = "merge",
+	REPLACE = "replace",
+}
 
 export interface ImportOptions {
 	filePath: string;
-	mode: ImportMode;
+	mode: ImportModeEnum;
 	validateOnly?: boolean;
 }
 

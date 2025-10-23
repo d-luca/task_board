@@ -1,21 +1,19 @@
-"use client";
-
-import * as React from "react";
 import { DayButton, getDefaultClassNames } from "react-day-picker";
 
 import { cn } from "@renderer/lib/utils";
 import { Button } from "@renderer/components/ui/button";
+import { ComponentProps, JSX, useEffect, useRef } from "react";
 
 function CalendarDayButton({
 	className,
 	day,
 	modifiers,
 	...props
-}: React.ComponentProps<typeof DayButton>): React.JSX.Element {
+}: ComponentProps<typeof DayButton>): JSX.Element {
 	const defaultClassNames = getDefaultClassNames();
 
-	const ref = React.useRef<HTMLButtonElement>(null);
-	React.useEffect(() => {
+	const ref = useRef<HTMLButtonElement>(null);
+	useEffect(() => {
 		if (modifiers.focused) ref.current?.focus();
 	}, [modifiers.focused]);
 

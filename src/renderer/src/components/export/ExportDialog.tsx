@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { JSX, useState } from "react";
 import {
 	Dialog,
 	DialogContent,
@@ -14,17 +14,17 @@ import { useStore } from "../../store/useStore";
 import { FormatSelector } from "./FormatSelector";
 import { ScopeSelector } from "./ScopeSelector";
 import { ExportOptions } from "./ExportOptions";
-import { ExportFormat, ExportScope, ExportResult } from "./types";
+import { ExportFormatEnum, ExportResult, ExportScopeEnum } from "./types";
 
 interface ExportDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }
 
-export function ExportDialog({ open, onOpenChange }: ExportDialogProps): ReactElement {
+export function ExportDialog({ open, onOpenChange }: ExportDialogProps): JSX.Element {
 	const { currentProjectId, projects } = useStore();
-	const [format, setFormat] = useState<ExportFormat>("json");
-	const [scope, setScope] = useState<ExportScope>("single-project");
+	const [format, setFormat] = useState<ExportFormatEnum>(ExportFormatEnum.JSON);
+	const [scope, setScope] = useState<ExportScopeEnum>(ExportScopeEnum.SINGLE_PROJECT);
 	const [includeArchived, setIncludeArchived] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
 

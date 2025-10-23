@@ -1,8 +1,9 @@
 import { Card } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
 import { TaskCardSkeleton } from "../task/TaskCardSkeleton";
+import { JSX } from "react";
 
-export function KanbanBoardSkeleton(): React.ReactElement {
+export function KanbanBoardSkeleton(): JSX.Element {
 	return (
 		<div className="flex h-full gap-4 p-6">
 			{/* Three columns */}

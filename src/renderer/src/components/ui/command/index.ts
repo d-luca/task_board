@@ -1,11 +1,9 @@
-export {
-	Command,
-	CommandDialog,
-	CommandInput,
-	CommandList,
-	CommandEmpty,
-	CommandGroup,
-	CommandItem,
-	CommandShortcut,
-	CommandSeparator,
-} from "./command";
+export { Command } from "./Command";
+export { CommandDialog } from "./CommandDialog";
+export { CommandInput } from "./CommandInput";
+export { CommandList } from "./CommandList";
+export { CommandEmpty } from "./CommandEmpty";
+export { CommandGroup } from "./CommandGroup";
+export { CommandSeparator } from "./CommandSeparator";
+export { CommandItem } from "./CommandItem";
+export { CommandShortcut } from "./CommandShortcut";

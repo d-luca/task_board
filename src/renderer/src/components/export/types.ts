@@ -1,9 +1,15 @@
-export type ExportFormat = "json" | "csv";
-export type ExportScope = "all" | "single-project";
+export enum ExportFormatEnum {
+	JSON = "json",
+	CSV = "csv",
+}
+export enum ExportScopeEnum {
+	ALL = "all",
+	SINGLE_PROJECT = "single-project",
+}
 
 export interface ExportOptions {
-	format: ExportFormat;
-	scope: ExportScope;
+	format: ExportFormatEnum;
+	scope: ExportScopeEnum;
 	projectId?: string;
 	includeArchived: boolean;
 }

@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { JSX, useState } from "react";
 import {
 	Dialog,
 	DialogContent,
@@ -14,16 +14,16 @@ import { useStore } from "../../store/useStore";
 import { FileSelector } from "./FileSelector";
 import { ValidationStatus } from "./ValidationStatus";
 import { ModeSelector } from "./ModeSelector";
-import { ImportMode, ImportResult } from "./types";
+import { ImportModeEnum, ImportResult } from "./types";
 
 interface ImportDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }
 
-export function ImportDialog({ open, onOpenChange }: ImportDialogProps): ReactElement {
+export function ImportDialog({ open, onOpenChange }: ImportDialogProps): JSX.Element {
 	const { loadProjects, loadTasks, currentProjectId } = useStore();
-	const [mode, setMode] = useState<ImportMode>("merge");
+	const [mode, setMode] = useState<ImportModeEnum>(ImportModeEnum.MERGE);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const [validationResult, setValidationResult] = useState<ImportResult | null>(null);
 	const [isValidating, setIsValidating] = useState(false);
