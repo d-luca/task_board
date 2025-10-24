@@ -48,7 +48,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps): JSX.Ele
 			setIsValidating(true);
 			const result: ImportResult = await window.api.import.fromJSON({
 				filePath,
-				mode: "merge",
+				mode: ImportModeEnum.MERGE,
 				validateOnly: true,
 			});
 			setValidationResult(result);

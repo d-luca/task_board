@@ -1,11 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Project } from "../models/Project";
-import { Task } from "../models/Task";
+import { Task, TaskStatus } from "../models/Task";
 import fs from "fs/promises";
 import { Types } from "mongoose";
 
+export enum ImportModeEnum {
+	MERGE = "merge",
+	REPLACE = "replace",
+}
+
 export interface ImportOptions {
 	filePath: string;
-	mode: "merge" | "replace";
+	mode: ImportModeEnum;
 	validateOnly?: boolean;
 }
 
@@ -59,7 +65,7 @@ export async function importFromJSON(options: ImportOptions): Promise<ImportResu
 		}
 
 		// Perform import based on mode
-		if (options.mode === "replace") {
+		if (options.mode === ImportModeEnum.REPLACE) {
 			// Clear existing data
 			await Project.deleteMany({});
 			await Task.deleteMany({});
@@ -73,6 +79,7 @@ export async function importFromJSON(options: ImportOptions): Promise<ImportResu
 			const oldId = projectData._id.toString();
 
 			// Create new project (without _id to let MongoDB generate new one)
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { _id, ...projectFields } = projectData;
 			const newProject = await Project.create({
 				...projectFields,
@@ -98,6 +105,7 @@ export async function importFromJSON(options: ImportOptions): Promise<ImportResu
 			}
 
 			// Create new task
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { _id, ...taskFields } = taskData;
 			const newTask = await Task.create({
 				...taskFields,
@@ -151,7 +159,7 @@ export async function restoreFromBackup(backupPath: string): Promise<ImportResul
 		const importedProjects: any[] = [];
 		for (const projectData of data.projects) {
 			const project = await Project.create({
-				_id: new Types.ObjectId(projectData._id),
+				_id: new Types.ObjectId(`${ImportModeEnum}`),
 				...projectData,
 				createdAt: new Date(projectData.createdAt),
 				updatedAt: new Date(projectData.updatedAt),
@@ -163,7 +171,7 @@ export async function restoreFromBackup(backupPath: string): Promise<ImportResul
 		const importedTasks: any[] = [];
 		for (const taskData of data.tasks) {
 			const task = await Task.create({
-				_id: new Types.ObjectId(taskData._id),
+				_id: new Types.ObjectId(`${taskData._id}`),
 				...taskData,
 				projectId: taskData.projectId,
 				createdAt: new Date(taskData.createdAt),
@@ -242,7 +250,7 @@ function validateImportData(data: any): {
 		} else if (!projectIds.has(task.projectId.toString())) {
 			warnings.push(`Task "${task.title}" references non-existent project (will be skipped)`);
 		}
-		if (!["todo", "in-progress", "done"].includes(task.status)) {
+		if (![TaskStatus.TODO, TaskStatus.IN_PROGRESS, TaskStatus.DONE].includes(task.status)) {
 			warnings.push(`Task "${task.title}" has invalid status: ${task.status} (will be set to 'todo')`);
 		}
 	});

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Project, IProject } from "../models/Project";
 
 export const projectService = {

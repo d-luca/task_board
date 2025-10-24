@@ -1,4 +1,5 @@
-import { Task, ITask } from "../models/Task";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Task, ITask, TaskStatus } from "../models/Task";
 import mongoose from "mongoose";
 
 export const taskService = {
@@ -7,7 +8,7 @@ export const taskService = {
 			// Get the next position for the task in this column
 			const maxPosition = await Task.findOne({
 				projectId: data.projectId,
-				status: data.status || "todo",
+				status: data.status || TaskStatus.TODO,
 			})
 				.sort({ position: -1 })
 				.select("position")

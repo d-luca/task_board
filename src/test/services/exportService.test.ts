@@ -1,8 +1,14 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { Project } from "../../main/database/models/Project";
-import { Task } from "../../main/database/models/Task";
-import { exportToJSON, exportToCSV, createBackup } from "../../main/database/services/exportService";
+import { Task, TaskPriority, TaskStatus } from "../../main/database/models/Task";
+import {
+	exportToJSON,
+	exportToCSV,
+	createBackup,
+	ExportFormatEnum,
+	ExportScopeEnum,
+} from "../../main/database/services/exportService";
 import * as fs from "fs/promises";
 
 // Mock electron app
@@ -59,8 +65,8 @@ describe("Export Service", () => {
 			await Task.create({
 				title: "Test Task",
 				description: "Task Description",
-				status: "todo",
-				priority: "medium",
+				status: TaskStatus.TODO,
+				priority: TaskPriority.MEDIUM,
 				projectId: project._id,
 			});
 
@@ -69,8 +75,8 @@ describe("Export Service", () => {
 			mockWriteFile.mockResolvedValue(undefined);
 
 			const result = await exportToJSON({
-				format: "json",
-				scope: "all",
+				format: ExportFormatEnum.JSON,
+				scope: ExportScopeEnum.ALL,
 				includeArchived: false,
 			});
 
@@ -105,15 +111,15 @@ describe("Export Service", () => {
 
 			await Task.create({
 				title: "Task 1",
-				status: "todo",
-				priority: "medium",
+				status: TaskStatus.TODO,
+				priority: TaskPriority.MEDIUM,
 				projectId: project1._id,
 			});
 
 			await Task.create({
 				title: "Task 2",
-				status: "done",
-				priority: "high",
+				status: TaskStatus.DONE,
+				priority: TaskPriority.HIGH,
 				projectId: project2._id,
 			});
 
@@ -121,8 +127,8 @@ describe("Export Service", () => {
 			mockWriteFile.mockResolvedValue(undefined);
 
 			const result = await exportToJSON({
-				format: "json",
-				scope: "single-project",
+				format: ExportFormatEnum.JSON,
+				scope: ExportScopeEnum.SINGLE_PROJECT,
 				projectId: project1._id.toString(),
 				includeArchived: false,
 			});
@@ -146,16 +152,16 @@ describe("Export Service", () => {
 
 			await Task.create({
 				title: "Active Task",
-				status: "todo",
-				priority: "medium",
+				status: TaskStatus.TODO,
+				priority: TaskPriority.MEDIUM,
 				projectId: project._id,
 				archived: false,
 			});
 
 			await Task.create({
 				title: "Archived Task",
-				status: "done",
-				priority: "low",
+				status: TaskStatus.DONE,
+				priority: TaskPriority.LOW,
 				projectId: project._id,
 				archived: true,
 			});
@@ -164,8 +170,8 @@ describe("Export Service", () => {
 			mockWriteFile.mockResolvedValue(undefined);
 
 			const result = await exportToJSON({
-				format: "json",
-				scope: "all",
+				format: ExportFormatEnum.JSON,
+				scope: ExportScopeEnum.ALL,
 				includeArchived: false,
 			});
 
@@ -189,8 +195,8 @@ describe("Export Service", () => {
 			await Task.create({
 				title: "CSV Task",
 				description: "Task for CSV",
-				status: "in-progress",
-				priority: "high",
+				status: TaskStatus.IN_PROGRESS,
+				priority: TaskPriority.HIGH,
 				projectId: project._id,
 			});
 
@@ -198,8 +204,8 @@ describe("Export Service", () => {
 			mockWriteFile.mockResolvedValue(undefined);
 
 			const result = await exportToCSV({
-				format: "csv",
-				scope: "all",
+				format: ExportFormatEnum.CSV,
+				scope: ExportScopeEnum.ALL,
 				includeArchived: false,
 			});
 
@@ -210,8 +216,8 @@ describe("Export Service", () => {
 			const [, csvData] = mockWriteFile.mock.calls[0];
 			expect(csvData).toContain("ID,Title,Description,Status,Priority,Project");
 			expect(csvData).toContain("CSV Task");
-			expect(csvData).toContain("in-progress");
-			expect(csvData).toContain("high");
+			expect(csvData).toContain(TaskStatus.IN_PROGRESS);
+			expect(csvData).toContain(TaskPriority.HIGH);
 			expect(csvData).toContain("CSV Project");
 		});
 
@@ -223,8 +229,8 @@ describe("Export Service", () => {
 			await Task.create({
 				title: "Task with, comma",
 				description: "Description with\nNewline",
-				status: "todo",
-				priority: "medium",
+				status: TaskStatus.TODO,
+				priority: TaskPriority.MEDIUM,
 				projectId: project._id,
 			});
 
@@ -232,8 +238,8 @@ describe("Export Service", () => {
 			mockWriteFile.mockResolvedValue(undefined);
 
 			const result = await exportToCSV({
-				format: "csv",
-				scope: "all",
+				format: ExportFormatEnum.CSV,
+				scope: ExportScopeEnum.ALL,
 				includeArchived: false,
 			});
 

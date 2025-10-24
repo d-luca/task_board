@@ -14,7 +14,7 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps): JSX.Elemen
 			<Label className="text-base font-semibold">Import Mode</Label>
 			<RadioGroup value={value} onValueChange={(val) => onChange(val as ImportModeEnum)}>
 				<div className="hover:bg-accent flex items-center space-x-2 rounded-lg border p-3">
-					<RadioGroupItem value="merge" id="merge" />
+					<RadioGroupItem value={ImportModeEnum.MERGE} id="merge" />
 					<Label htmlFor="merge" className="flex-1 cursor-pointer">
 						<div className="font-medium">Merge</div>
 						<div className="text-muted-foreground text-sm">
@@ -23,7 +23,7 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps): JSX.Elemen
 					</Label>
 				</div>
 				<div className="hover:bg-accent flex items-center space-x-2 rounded-lg border p-3">
-					<RadioGroupItem value="replace" id="replace" />
+					<RadioGroupItem value={ImportModeEnum.REPLACE} id="replace" />
 					<Label htmlFor="replace" className="flex-1 cursor-pointer">
 						<div className="font-medium">Replace (Dangerous)</div>
 						<div className="text-muted-foreground text-sm">Delete all existing data and import</div>

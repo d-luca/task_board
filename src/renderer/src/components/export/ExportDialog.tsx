@@ -40,7 +40,9 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps): JSX.Ele
 			};
 
 			const result: ExportResult =
-				format === "json" ? await window.api.export.toJSON(options) : await window.api.export.toCSV(options);
+				format === ExportFormatEnum.JSON
+					? await window.api.export.toJSON(options)
+					: await window.api.export.toCSV(options);
 
 			if (result.success && result.filePath) {
 				toast.success("Export successful", {

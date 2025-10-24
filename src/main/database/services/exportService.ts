@@ -4,9 +4,20 @@ import fs from "fs/promises";
 import path from "path";
 import { app } from "electron";
 
+export enum ExportFormatEnum {
+	JSON = "json",
+	CSV = "csv",
+}
+
+export enum ExportScopeEnum {
+	ALL = "all",
+	SINGLE_PROJECT = "single-project",
+	SELECTED_TASKS = "selected-tasks",
+}
+
 export interface ExportOptions {
-	format: "json" | "csv";
-	scope: "all" | "single-project" | "selected-tasks";
+	format: ExportFormatEnum;
+	scope: ExportScopeEnum;
 	projectId?: string;
 	taskIds?: string[];
 	includeArchived?: boolean;
@@ -27,11 +38,11 @@ export async function exportToJSON(options: ExportOptions): Promise<ExportResult
 		let tasks;
 
 		// Determine what to export based on scope
-		if (options.scope === "all") {
+		if (options.scope === ExportScopeEnum.ALL) {
 			const query = options.includeArchived ? {} : { archived: { $ne: true } };
 			projects = await Project.find(query).lean();
 			tasks = await Task.find(query).lean();
-		} else if (options.scope === "single-project" && options.projectId) {
+		} else if (options.scope === ExportScopeEnum.SINGLE_PROJECT && options.projectId) {
 			projects = await Project.findById(options.projectId).lean();
 			const query = { projectId: options.projectId };
 			if (!options.includeArchived) {
@@ -39,7 +50,7 @@ export async function exportToJSON(options: ExportOptions): Promise<ExportResult
 			}
 			tasks = await Task.find(query).lean();
 			projects = projects ? [projects] : [];
-		} else if (options.scope === "selected-tasks" && options.taskIds) {
+		} else if (options.scope === ExportScopeEnum.SELECTED_TASKS && options.taskIds) {
 			tasks = await Task.find({ _id: { $in: options.taskIds } }).lean();
 			// Get unique project IDs from selected tasks
 			const projectIds = [...new Set(tasks.map((t) => t.projectId))];
@@ -90,16 +101,16 @@ export async function exportToCSV(options: ExportOptions): Promise<ExportResult>
 		let tasks;
 
 		// Determine what to export based on scope
-		if (options.scope === "all") {
+		if (options.scope === ExportScopeEnum.ALL) {
 			const query = options.includeArchived ? {} : { archived: { $ne: true } };
 			tasks = await Task.find(query).lean();
-		} else if (options.scope === "single-project" && options.projectId) {
+		} else if (options.scope === ExportScopeEnum.SINGLE_PROJECT && options.projectId) {
 			const query = { projectId: options.projectId };
 			if (!options.includeArchived) {
 				Object.assign(query, { archived: { $ne: true } });
 			}
 			tasks = await Task.find(query).lean();
-		} else if (options.scope === "selected-tasks" && options.taskIds) {
+		} else if (options.scope === ExportScopeEnum.SELECTED_TASKS && options.taskIds) {
 			tasks = await Task.find({ _id: { $in: options.taskIds } }).lean();
 		} else {
 			throw new Error("Invalid export scope or missing required parameters");
@@ -239,6 +250,8 @@ export async function listBackups(): Promise<string[]> {
 
 		return backupFiles.map((file) => path.join(backupsDir, file));
 	} catch (error) {
+		// On error, log and return empty list
+		console.error("Error listing backups:", error);
 		return [];
 	}
 }
