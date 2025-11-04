@@ -9,8 +9,14 @@ import {
 	ExportOptions,
 } from "../database/services/exportService";
 import { importFromJSON, restoreFromBackup, ImportOptions } from "../database/services/importService";
+import { getDatabaseStatus } from "../database/statusManager";
 
 export function setupIpcHandlers(): void {
+	// Database status handler
+	ipcMain.handle("database:getStatus", () => {
+		return getDatabaseStatus();
+	});
+
 	// Project handlers
 	ipcMain.handle("project:create", async (_event, data) => {
 		return await projectService.create(data);

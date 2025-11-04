@@ -8,9 +8,11 @@ import { ExportDialog } from "./components/export";
 import { ImportDialog } from "./components/import";
 import { EmptyState } from "./components/EmptyState";
 import { ProjectView } from "./components/ProjectView";
+import { LoadingScreen } from "./components/LoadingScreen";
 import { useStore } from "./store/useStore";
 import type { Task } from "./types/task";
 import { TaskStatus, TaskPriority } from "./types/task";
+import type { DatabaseStatus } from "../../preload/types/api";
 
 function App(): JSX.Element {
 	const [projectDialogOpen, setProjectDialogOpen] = useState(false);
@@ -19,6 +21,11 @@ function App(): JSX.Element {
 	const [importDialogOpen, setImportDialogOpen] = useState(false);
 	const [editingTask, setEditingTask] = useState<Task | null>(null);
 	const [editingProject, setEditingProject] = useState(false);
+	const [dbStatus, setDbStatus] = useState<DatabaseStatus>({
+		isConnected: false,
+		isInitializing: true,
+		message: "Initializing...",
+	});
 	const {
 		projects,
 		currentProjectId,
@@ -30,6 +37,19 @@ function App(): JSX.Element {
 	} = useStore();
 
 	const currentProject = getCurrentProject();
+
+	// Listen for database status updates
+	useEffect(() => {
+		// Get initial status
+		window.api.getDatabaseStatus().then(setDbStatus);
+
+		// Listen for status updates
+		const unsubscribe = window.api.onDatabaseStatus((status: DatabaseStatus) => {
+			setDbStatus(status);
+		});
+
+		return unsubscribe;
+	}, []);
 
 	// Listen for menu/tray triggered events
 	useEffect(() => {
@@ -129,6 +149,16 @@ function App(): JSX.Element {
 		setEditingProject(true);
 		setProjectDialogOpen(true);
 	}, []);
+
+	// Show loading screen while database is initializing
+	if (dbStatus.isInitializing) {
+		return <LoadingScreen message={dbStatus.message} />;
+	}
+
+	// Show error if database failed but still render the app
+	if (dbStatus.error) {
+		console.error("Database error:", dbStatus.error);
+	}
 
 	return (
 		<>

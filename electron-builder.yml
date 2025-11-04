@@ -17,6 +17,8 @@ files:
   - "!docker-compose.yml"
 asarUnpack:
   - resources/**
+  - node_modules/mongodb-memory-server-core/dist/**
+  - node_modules/@mongosh/**
 
 # Windows Configuration
 win:

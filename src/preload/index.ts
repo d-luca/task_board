@@ -61,6 +61,12 @@ const api = {
 		ipcRenderer.on("open-import-dialog", callback);
 		return () => ipcRenderer.removeListener("open-import-dialog", callback);
 	},
+	// Database status
+	onDatabaseStatus: (callback: (status: unknown) => void) => {
+		ipcRenderer.on("database-status", (_event, status) => callback(status));
+		return () => ipcRenderer.removeAllListeners("database-status");
+	},
+	getDatabaseStatus: () => ipcRenderer.invoke("database:getStatus"),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

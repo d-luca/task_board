@@ -1,27 +1,28 @@
 # Multi-Project Task Board Manager
 
+<div align="center">
+
 A modern desktop application for managing multiple task boards (projects) with a beautiful kanban-style interface. Built with Electron, React, TypeScript, MongoDB, Tailwind CSS, and shadcn/ui.
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+</div>
 
 ## ✨ Features
 
 - 🎯 **Multi-Project Support**: Manage multiple task boards, each representing a different project
 - 📋 **Kanban Board**: Visual drag-and-drop interface with To Do, In Progress, and Done columns
 - 🎨 **Modern UI**: Beautiful, accessible components using shadcn/ui and Tailwind CSS
-- 🗄️ **Persistent Storage**: MongoDB database for reliable data persistence
+- 🗄️ **Persistent Storage**: MongoDB database for reliable data persistence with auto-startup
 - ⚡ **Fast & Responsive**: Built with Vite for lightning-fast development and builds
 - 🔒 **Type-Safe**: Full TypeScript support throughout the stack
 - 🖥️ **Cross-Platform**: Native desktop app for Windows, macOS, and Linux
 - 🎯 **Task Management**: Priority levels, due dates, labels, and checklists
-- 🔍 **Search & Filter**: Powerful filtering and search capabilities
-- 📊 **Project Statistics**: Track completion rates and task counts
+- 🔄 **Zero Configuration**: MongoDB automatically starts with the app - no setup required
+- 📱 **System Tray Integration**: Run in background with quick access from system tray
+- 💾 **Easy Import/Export**: Backup and restore your data easily
 
-## 📚 Documentation
 
-- **[QUICK_START.md](./QUICK_START.md)** - Get started quickly with setup instructions
-- **[PROJECT_INSTRUCTIONS.md](./PROJECT_INSTRUCTIONS.md)** - Complete project overview and requirements
-- **[DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md)** - Detailed phase-by-phase implementation guide
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture and data flow diagrams
-- **[CHANGES_SUMMARY.md](./CHANGES_SUMMARY.md)** - Summary of project modifications
 
 ## 🚀 Quick Start
 
@@ -29,35 +30,36 @@ A modern desktop application for managing multiple task boards (projects) with a
 
 - **Node.js** v18 or higher
 - **pnpm** (install with: `npm install -g pnpm`)
-- **MongoDB** v5.0 or higher (local or MongoDB Atlas)
+- **Docker** (for development only - [Install Docker](https://docs.docker.com/get-docker/))
+
+> **Note**: MongoDB is **automatically managed** by the app:
+> - **Development**: Uses Docker (auto-starts when you run `pnpm dev`)
+> - **Production**: Embedded MongoDB included in the app (no external dependencies)
+> - **First Run**: May take 2-5 minutes to download MongoDB binaries (~50-100 MB)
+> - **Subsequent Runs**: Starts instantly using cached binaries
+>
+> See [MongoDB Setup Guide](./docs/MONGODB_SETUP.md) for detailed information.
 
 ### Installation
 
 ```bash
 # Clone the repository
-cd d:\Home\Projects\Electron\task_board
+cd /your/path/here
 
 # Install dependencies
 pnpm install
 
-# Install shadcn/ui components
-pnpm dlx shadcn-ui@latest init
-pnpm dlx shadcn-ui@latest add button card dialog input label select textarea dropdown-menu popover calendar badge toast skeleton command separator
-
-# Install additional packages
-pnpm add mongoose zod react-hook-form @hookform/resolvers
-pnpm add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
-pnpm add lucide-react class-variance-authority clsx tailwind-merge zustand date-fns
-```
 
 ### Development
 
 ```bash
-# Start MongoDB (if using local installation)
-net start MongoDB
-
-# Start the development server
+# Start the development server (MongoDB auto-starts via Docker)
 pnpm dev
+
+# Or manually manage MongoDB:
+pnpm mongo:start   # Start MongoDB
+pnpm mongo:stop    # Stop MongoDB
+pnpm mongo:logs    # View MongoDB logs
 ```
 
 The app will open in a new window with hot reload enabled.
@@ -77,6 +79,19 @@ pnpm build:mac
 # Package for Linux
 pnpm build:linux
 ```
+
+### First Launch (Production Build)
+
+When you run the built application for the first time:
+
+1. **Loading Screen Appears**: You'll see a loading screen with progress messages
+2. **Binary Download**: MongoDB binaries (~50-100 MB) will be downloaded automatically
+   - This takes 2-5 minutes depending on your internet speed
+   - Progress messages keep you informed of what's happening
+3. **Automatic Startup**: Once download completes, the app starts automatically
+4. **Subsequent Launches**: Take only 2-5 seconds using cached binaries
+
+> **Tip**: If the loading screen shows a warning after 2 minutes, check your internet connection. The app will timeout after 5 minutes if download fails.
 
 ## 🏗️ Technology Stack
 
@@ -131,7 +146,6 @@ task_board/
 │       │   ├── types/           # TypeScript types
 │       │   └── lib/             # Utilities
 │       └── index.html
-├── docs/                        # Documentation
 ├── package.json
 ├── electron.vite.config.ts
 ├── tailwind.config.js
@@ -150,26 +164,21 @@ task_board/
 ### Task Board
 
 - Kanban-style board with drag-and-drop
-- Three default columns: To Do, In Progress, Done
-- Visual indicators for priority and due dates
-- Task filtering and search within projects
-
-### Task Management
-
-- Rich task details with descriptions
-- Priority levels (High, Medium, Low)
-- Due dates with notifications
-- Labels and categories
-- Checklists within tasks
-- Task archiving
-
 ### Desktop Integration
 
-- System tray integration
-- Native notifications
-- Keyboard shortcuts
-- Window state persistence
-- Cross-platform support
+- **System tray integration**: Minimize to tray, quick access to common actions
+- **Native notifications**: Desktop notifications for important events
+- **Keyboard shortcuts**:
+  - `Ctrl/Cmd + N` - New Task
+  - `Ctrl/Cmd + Shift + N` - New Project
+  - `Ctrl/Cmd + E` - Export Data
+  - `Ctrl/Cmd + I` - Import Data
+  - `Ctrl/Cmd + Shift + T` - Toggle window visibility
+- **Window state persistence**: Remember size, position, and maximized state
+- **Cross-platform support**: Consistent experience on Windows, macOS, and Linux
+- **Comprehensive logging**: Access logs via Help → Open Log File for troubleshooting descriptions
+
+### Desktop Integration
 
 ## 🛠️ Development
 
@@ -186,6 +195,28 @@ task_board/
 ### Available Commands
 
 ```bash
+# Development
+pnpm dev              # Start development server (auto-starts MongoDB)
+pnpm start            # Start built app in preview mode
+
+# Building
+pnpm build            # Build for production
+pnpm build:win        # Build Windows installer
+pnpm build:mac        # Build macOS installer
+pnpm build:linux      # Build Linux installer
+
+# MongoDB Management (Development)
+pnpm mongo:start      # Start Docker MongoDB manually
+pnpm mongo:stop       # Stop Docker MongoDB
+pnpm mongo:logs       # View MongoDB logs
+
+# Code Quality
+pnpm typecheck        # Type checking
+pnpm lint             # Run ESLint
+pnpm format           # Format code with Prettier
+pnpm test             # Run tests
+pnpm test:coverage    # Run tests with coverage
+```bash
 pnpm dev              # Start development server
 pnpm build            # Build for production
 pnpm typecheck        # Type checking
@@ -194,51 +225,35 @@ pnpm format           # Format code with Prettier
 ```
 
 ### Development Workflow
+## 🐛 Troubleshooting
 
-1. Read [QUICK_START.md](./QUICK_START.md) for initial setup
-2. Follow [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for implementation
-3. Refer to [ARCHITECTURE.md](./ARCHITECTURE.md) for system design
-4. Test features as you build them
+### App Won't Open After Installation
 
-## 📖 Learning Resources
+1. Check the log file: Help → Open Log File (or `%APPDATA%\taskboard\logs\`)
+2. Ensure you have a stable internet connection (first run downloads MongoDB binaries)
+3. Wait up to 5 minutes on first launch for MongoDB setup
+4. Try running as administrator if permission errors occur
 
-- [Electron Documentation](https://www.electronjs.org/docs)
-- [React Documentation](https://react.dev)
-- [Tailwind CSS](https://tailwindcss.com)
-- [shadcn/ui](https://ui.shadcn.com)
-- [MongoDB Documentation](https://docs.mongodb.com)
-- [Zustand](https://zustand-demo.pmnd.rs)
-- [@dnd-kit](https://docs.dndkit.com)
+### MongoDB Connection Issues
 
-## 🤝 Contributing
+- **Development**: Ensure Docker is running (`docker ps` should show `dt_mongo`)
+- **Production**: Check logs for detailed error messages
+- **Network**: If behind a proxy, MongoDB download may fail
 
-This is a learning project. Feel free to:
+### Loading Screen Stuck
 
-- Fork the repository
-- Create feature branches
-- Submit pull requests
-- Report issues
-- Suggest improvements
+- If stuck for more than 5 minutes, close and restart the app
+- Check internet connection
+- Review logs for timeout or network errors
+- Try deleting `%APPDATA%\taskboard\mongodb-binaries` and restarting
 
-## 📝 License
+## 🙏 Acknowledgments
 
-MIT License - feel free to use this project for learning and development.
+- Built with [Electron](https://www.electronjs.org/)
+- UI components from [Radix UI](https://www.radix-ui.com/) & [shadcn/ui](https://ui.shadcn.com)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- DB used [MongoDB](https://docs.mongodb.com)
 
-## 🎓 Learning Objectives
+## 📄 License
 
-By completing this project, you will learn:
-
-- Modern React patterns with TypeScript
-- Electron desktop app development
-- MongoDB integration and data modeling
-- State management with Zustand
-- Component library usage (shadcn/ui)
-- Drag-and-drop implementation
-- IPC communication in Electron
-- Desktop app packaging and distribution
-
----
-
-**Status**: In Development 🚧
-
-For detailed implementation steps, see [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -12,4 +12,13 @@ export interface API {
 	onOpenProjectDialog: (callback: () => void) => () => void;
 	onOpenExportDialog: (callback: () => void) => () => void;
 	onOpenImportDialog: (callback: () => void) => () => void;
+	onDatabaseStatus: (callback: (status: DatabaseStatus) => void) => () => void;
+	getDatabaseStatus: () => Promise<DatabaseStatus>;
+}
+
+export interface DatabaseStatus {
+	isConnected: boolean;
+	isInitializing: boolean;
+	error?: string;
+	message?: string;
 }

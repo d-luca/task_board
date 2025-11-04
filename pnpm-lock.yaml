@@ -74,6 +74,9 @@ importers:
       lucide-react:
         specifier: ^0.545.0
         version: 0.545.0(react@19.1.1)
+      mongodb-memory-server:
+        specifier: ^10.2.3
+        version: 10.2.3(socks@2.8.7)
       mongoose:
         specifier: ^8.19.1
         version: 8.19.1(socks@2.8.7)
@@ -165,9 +168,6 @@ importers:
       jest-environment-jsdom:
         specifier: ^30.2.0
         version: 30.2.0
-      mongodb-memory-server:
-        specifier: ^10.2.3
-        version: 10.2.3(socks@2.8.7)
       prettier:
         specifier: ^3.6.2
         version: 3.6.2

@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 import { connectDatabase, disconnectDatabase } from "./database/connection";
 import { setupIpcHandlers } from "./ipc/handlers";
+import { logger } from "./utils/logger";
 import * as fs from "fs";
 
 let mainWindow: BrowserWindow | null = null;
@@ -220,12 +221,25 @@ function createApplicationMenu(): void {
 					},
 				},
 				{
+					label: "Open Log File",
+					click: () => {
+						shell.showItemInFolder(logger.getLogPath());
+					},
+				},
+				{
+					label: "Open User Data Folder",
+					click: () => {
+						shell.openPath(app.getPath("userData"));
+					},
+				},
+				{ type: "separator" },
+				{
 					label: "About",
 					click: () => {
 						const aboutMessage = `Task Board Manager\nVersion: ${app.getVersion()}\n\nA desktop application for managing tasks and projects.`;
 						if (mainWindow) {
 							// You could show a custom dialog here
-							console.log(aboutMessage);
+							logger.info(aboutMessage);
 						}
 					},
 				},
@@ -316,6 +330,16 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+	logger.info("=".repeat(60));
+	logger.info("Application starting...");
+	logger.info(`Version: ${app.getVersion()}`);
+	logger.info(`Platform: ${process.platform}`);
+	logger.info(`Electron: ${process.versions.electron}`);
+	logger.info(`Node: ${process.versions.node}`);
+	logger.info(`User Data: ${app.getPath("userData")}`);
+	logger.info(`Is Packaged: ${app.isPackaged}`);
+	logger.info("=".repeat(60));
+
 	// Set app user model id for windows
 	electronApp.setAppUserModelId("com.electron");
 
@@ -326,27 +350,38 @@ app.whenReady().then(async () => {
 		optimizer.watchWindowShortcuts(window);
 	});
 
-	// Initialize database connection
-	try {
-		await connectDatabase();
-		console.log("Database connected successfully");
-	} catch (error) {
-		console.error("Failed to connect to database:", error);
-	}
+	// Create window first so user sees the app
+	logger.info("Creating main window...");
+	createWindow();
+
+	// Initialize database connection (don't block window creation)
+	logger.info("Starting database connection...");
+	connectDatabase()
+		.then(() => {
+			logger.info("Database connected successfully");
+		})
+		.catch((error) => {
+			logger.error("Failed to connect to database:", error);
+			logger.error("The app will continue with limited functionality.");
+		});
 
 	// Setup IPC handlers for database operations
+	logger.info("Setting up IPC handlers...");
 	setupIpcHandlers();
 
 	// Create application menu
+	logger.info("Creating application menu...");
 	createApplicationMenu();
 
 	// Register global shortcuts
+	logger.info("Registering global shortcuts...");
 	registerGlobalShortcuts();
 
 	// Create system tray
+	logger.info("Creating system tray...");
 	createTray();
 
-	createWindow();
+	logger.info("Application started successfully");
 
 	app.on("activate", function () {
 		// On macOS it's common to re-create a window in the app when the
@@ -365,10 +400,12 @@ app.on("window-all-closed", async () => {
 
 // Handle database cleanup on app quit
 app.on("before-quit", async () => {
+	logger.info("Application shutting down...");
 	isQuitting = true;
 	await disconnectDatabase();
 	// Unregister global shortcuts
 	globalShortcut.unregisterAll();
+	logger.info("Application shut down complete");
 });
 
 // In this file you can include the rest of your app's specific main process
