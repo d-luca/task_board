@@ -1,6 +1,6 @@
 appId: com.taskboard.app
 productName: TaskBoard
-copyright: Copyright © 2024 TaskBoard
+copyright: Copyright © 2025 TaskBoard
 directories:
   buildResources: build
   output: dist

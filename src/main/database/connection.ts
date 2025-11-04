@@ -42,13 +42,18 @@ export async function connectDatabase(): Promise<void> {
 		logger.info("Connecting to MongoDB at:", mongoUri);
 		statusManager.setInitializing("Connecting to database...");
 
+		// Ensure we're connecting to the taskboard database
+		const dbUri = mongoUri.endsWith("/") ? mongoUri + "taskboard" : mongoUri + "/taskboard";
+		logger.info("Full database URI:", dbUri);
+
 		// Then connect to it
-		await mongoose.connect(mongoUri, {
+		await mongoose.connect(dbUri, {
 			serverSelectionTimeoutMS: 10000,
 		});
 
 		isConnected = true;
 		logger.info("✓ MongoDB connected successfully!");
+		logger.info("Connected to database:", mongoose.connection.db?.databaseName);
 		statusManager.setConnected();
 
 		mongoose.connection.on("error", (error) => {

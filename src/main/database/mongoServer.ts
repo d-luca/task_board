@@ -51,17 +51,28 @@ async function startEmbeddedMongo(): Promise<string> {
 		logger.info("Binary size is approximately 50-100 MB depending on platform.");
 
 		const downloadDir = app.getPath("userData") + "/mongodb-binaries";
+		const dbPath = app.getPath("userData") + "/mongodb-data";
 		logger.info("MongoDB binaries will be stored at:", downloadDir);
+		logger.info("MongoDB data will be stored at:", dbPath);
+
+		// Ensure the data directory exists
+		const fs = await import("fs");
+		if (!fs.existsSync(dbPath)) {
+			logger.info("Creating data directory...");
+			fs.mkdirSync(dbPath, { recursive: true });
+		}
+
 		logger.info("Creating MongoMemoryServer instance...");
 
 		const startTime = Date.now();
 
-		// Configure mongodb-memory-server with additional options
+		// Configure mongodb-memory-server with persistent storage
 		mongoServer = await MongoMemoryServer.create({
 			instance: {
 				port: 27018,
 				dbName: "taskboard",
 				storageEngine: "wiredTiger",
+				dbPath: dbPath, // Persistent storage path
 			},
 			binary: {
 				version: "7.0.14",
@@ -74,6 +85,7 @@ async function startEmbeddedMongo(): Promise<string> {
 		const uri = mongoServer.getUri();
 		logger.info(`✓ Embedded MongoDB started successfully in ${duration}s`);
 		logger.info(`   URI: ${uri}`);
+		logger.info(`   Data persisted at: ${dbPath}`);
 		return uri;
 	} catch (error) {
 		logger.error("✗ Failed to start embedded MongoDB");
