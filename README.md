@@ -214,8 +214,6 @@ pnpm mongo:logs       # View MongoDB logs
 pnpm typecheck        # Type checking
 pnpm lint             # Run ESLint
 pnpm format           # Format code with Prettier
-pnpm test             # Run tests
-pnpm test:coverage    # Run tests with coverage
 ```bash
 pnpm dev              # Start development server
 pnpm build            # Build for production
