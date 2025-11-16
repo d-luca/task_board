@@ -6,6 +6,8 @@ Descrizione approfondita di come lo stack Electron + React + MongoDB + Mongoose 
 
 ## Electron Deep Dive
 
+Nella [documentazione ufficiale](https://www.electronjs.org/) e nella sezione [Why Electron](https://www.electronjs.org/docs/latest/why-electron), Electron è presentato come il framework per creare **app desktop multipiattaforma** combinando web stack e codice nativo, particolarmente adatto a prodotti “enterprise‑grade” che richiedono integrazione profonda con l’OS, aggiornamenti frequenti e un’unica codebase per macOS/Windows/Linux.
+Questo progetto ne sfrutta esattamente lo scopo: fornire un **contenitore desktop** per una Kanban app avanzata, con tray, menu, scorciatoie globali, dialog e gestione embedded di MongoDB che una normale web app non potrebbe avere.
 ### 1. Main Process Architecture
 
 Il cuore dell’applicazione desktop è il **main process** definito in `src/main/index.ts`. Qui vengono orchestrati:
@@ -45,6 +47,7 @@ Il cuore dell’applicazione desktop è il **main process** definito in `src/mai
   - Tutto ciò è accessibile **solo nel main process** (e nei moduli backend); il renderer non vede direttamente queste API ma passa dall’IPC.
 
 **Concetto chiave:** il main process è il **backend desktop**: controlla finestra, menu, tray, scorciatoie, log e ciclo di vita del database, con accesso completo al sistema operativo tramite Node.js ed Electron.
+**Ragion d’essere:** è il punto in cui applichiamo il modello consigliato nelle docs di Electron (main come orchestratore) per risolvere problemi tipici delle app reali: riaperture coerenti, shutdown puliti, gestione centralizzata delle risorse di sistema.
 
 ---
 
@@ -82,6 +85,7 @@ La comunicazione tra renderer (React) e main (Node + Mongo) è mediata da **IPC*
     7. Lo store sostituisce la task temporanea con quella reale oppure esegue un **rollback** in caso di errore.
 
 **Concetto chiave:** i processi sono **isolati** (renderer non ha accesso diretto a Node), e tutta la comunicazione passa per canali IPC ben definiti e tipizzati, incapsulati nel preload per ridurre la superficie d’attacco.
+**Ragion d’essere:** questo pattern permette di sfruttare la potenza del backend Node/Mongo restando aderenti alle linee guida di sicurezza di Electron (context isolation, API “surface” ridotta), così che nessun componente React possa accidentalmente eseguire operazioni pericolose sul sistema.
 
 ---
 
@@ -110,11 +114,14 @@ L’app sfrutta diverse integrazioni native che una normale web app non avrebbe:
   - I servizi di export (`exportService.ts`) scrivono file `.json` / `.csv` direttamente nelle cartelle **Downloads** o **userData**, sfruttando `app.getPath(...)`.
 
 **Concetto chiave:** l’app sfrutta le API native di Electron (tray, menu, global shortcut, dialog, filesystem) per offrire un’esperienza da **vera app desktop**, non solo una SPA in una WebView.
+**A cosa serve:** tutte queste integrazioni (citati come esempi nelle docs) trasformano la app da “sito web in una finestra” a strumento di produttività: avviabile da scorciatoie globali, sempre a portata di mano nel tray, capace di lavorare con file locali e con il file system dell’utente.
 
 ---
 
 ## React Deep Dive
 
+Le [React docs](https://react.dev/) definiscono React come una libreria per “**costruire interfacce utente**” che diventano più potenti man mano che lo stato e l’interattività crescono: è pensata per UI dinamiche, stateful e a componenti.
+Nel contesto di `task_board`, React è lo strumento ideale per modellare una **Kanban board interattiva**, con componenti riutilizzabili, drag‑and‑drop, form ricchi e uno state management strutturato che segue il paradigma `UI = f(state)`.
 ### 1. Component Architecture
 
 La UI è costruita come una gerarchia di componenti React tipizzati, con una chiara separazione tra layout, contenuto e funzionalità.
@@ -143,6 +150,7 @@ La UI è costruita come una gerarchia di componenti React tipizzati, con una chi
   - Passa a `TaskColumn` l’elenco di task filtrati per status, più callback per edit e delete.
 
 **Concetto chiave:** la UI è composta da componenti React a responsabilità singola, che comunicano principalmente tramite props, con un **data flow unidirezionale** orchestrato da uno store centrale (Zustand).
+**Ragion d’essere:** seguendo il modello a componenti che React propone nelle sue guide, questa architettura rende semplice evolvere la UI (nuove colonne, nuove viste, filtraggio) senza dover cambiare la logica di base: ridefiniamo il tree di componenti, non l’intera app.
 
 ---
 
@@ -180,6 +188,7 @@ La gestione dello stato client-side è affidata a **Zustand**, integrato con hoo
   - `useCallback` per funzioni che vengono passate ai figli (create/edit project/task), evitando re-render inutili.
 
 **Concetto chiave:** la combinazione React hooks + Zustand fornisce uno **state management client-side semplice ma potente**, con supporto nativo a pattern moderni come gli aggiornamenti ottimistici e il rollback in caso di errore.
+**A cosa serve:** gli optimistic updates implementano l’idea, cara alla doc di React, che l’interfaccia debba reagire subito all’intento dell’utente; il rollback salvaguarda l’integrità dei dati anche in presenza di errori di rete o di backend, coniugando UX fluida e robustezza.
 
 ---
 
@@ -204,14 +213,19 @@ Il progetto sfrutta diversi pattern moderni dell’ecosistema React:
   - I dialog di progetto e task (es. `ProjectDialog.tsx`, `TaskDialog.tsx`) sono costruiti sopra una gestione form moderna (pattern tipico: `react-hook-form` + componenti UI + validazione), anche se la logica dettagliata non è riportata qui, la struttura è predisposta per TypeScript e per pattern type-safe.
 
 **Concetto chiave:** l’app sfrutta l’ecosistema React moderno (DnD, UI library, state store) per costruire un’interfaccia **ricca, consistente e reattiva**, senza reinventare componenti di base.
+**Ragion d’essere:** invece di reimplementare drag‑and‑drop, sistemi di theming o componenti UI low‑level, ci appoggiamo a librerie che incarnano le best practice dell’ecosistema, esattamente come React suggerisce quando parla di “building on a rich ecosystem” per ridurre complessità e debito tecnico.
 
 ---
 
 ## MongoDB Deep Dive
 
+La documentazione di MongoDB descrive il prodotto come un **document database** con schema flessibile, pensato per applicazioni moderne che richiedono **alta disponibilità, scalabilità orizzontale** e un modello dati vicino agli oggetti applicativi ([MongoDB Manual – Introduction](https://www.mongodb.com/docs/manual/introduction/)).
+Nel nostro caso lo usiamo come **database locale embedded** per progetti e task: la struttura a documenti (Project + Task) si mappa naturalmente sulle entità del dominio e consente query efficienti per stato, posizione, date, testo e archiviazione.
 ### 1. Schema Design with Mongoose
 
-Il livello dati è modellato con **Mongoose**, che aggiunge una struttura chiara sopra MongoDB.
+Il livello dati è modellato con **Mongoose**, che secondo le [Mongoose docs](https://mongoosejs.com/docs/) è una “schema‑based solution to model application data”, cioè una libreria ODM che aggiunge **schemi, validazione e middleware** sopra MongoDB.
+Qui usiamo Mongoose per trasformare un database potenzialmente schema‑less in un livello dati **fortemente tipizzato e validato**, allineato alle esigenze di un’app desktop che deve preservare l’integrità delle task e dei progetti nel tempo.
+**Ragion d’essere:** in un tool di gestione progetti non possiamo permettere dati incoerenti (task senza progetto, status invalidi, ecc.); gli schemi Mongoose concretizzano le raccomandazioni delle docs sul data modeling, facendo rispettare queste regole a ogni operazione CRUD.
 
 - **`Project.ts` – Documento Project**
   - Campi principali:
@@ -252,6 +266,7 @@ Il livello dati è modellato con **Mongoose**, che aggiunge una struttura chiara
     - si vogliono query per data, ricerca testuale, ecc.
 
 **Concetto chiave:** MongoDB è schema‑less, ma Mongoose aggiunge **schema e validazione**, e la scelta Project→Tasks referenziati è ottimale per Kanban, query complesse e scalabilità.
+**A cosa serve:** modellare i Task come documenti separati referenziati dai Project segue il principio delle docs MongoDB (“modellare in base ai pattern di accesso”), ottimizzando per le esigenze reali dell’app: filtrare per progetto, status, data, testo e posizione senza costose trasformazioni lato client.
 
 ---
 
@@ -278,6 +293,7 @@ Le operazioni su MongoDB sono incapsulate in servizi che lavorano con Mongoose e
   - Fornisce metodi `create`, `findAll`, `findById`, `update`, `delete`, `archive`, `unarchive`, `search` in modo analogo, lavorando sul modello `Project`.
 
 **Concetto chiave:** tutte le operazioni CRUD sono **promise-based async** e restano incapsulate in servizi dedicati, mantenendo il main process e il renderer puliti e tipizzati.
+**Ragion d’essere:** organizzare il codice in servizi allineati ai modelli Mongoose ci permette di evolvere il data layer secondo le best practice Mongo/Mongoose (nuovi indici, validazioni, plugin) senza toccare la logica Electron/React, mantenendo un confine chiaro tra livelli dell’app.
 
 ---
 
@@ -315,6 +331,7 @@ Alcune funzionalità costruite sopra MongoDB/Mongoose mostrano bene l’integraz
   - Nel renderer (`App.tsx`), lo stato del database viene mostrato all’utente via `LoadingScreen` e messaggi di errore non bloccanti.
 
 **Concetto chiave:** l’app costruisce feature di livello applicativo (Kanban, import/export, backup, status database visibile nella UI) direttamente sopra MongoDB/Mongoose, mantenendo una **separazione netta** tra frontend, IPC, servizi e modelli.
+**A cosa serve:** qui diamo forma pratica all’idea espressa nella doc MongoDB di usare il database come “foundation” per le funzionalità di business: drag‑and‑drop persistente, backup, import/export e viste per data sono tutte capacità applicative costruite sopra primitive generiche di storage.
 
 ---
 
