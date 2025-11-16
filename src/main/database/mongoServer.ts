@@ -1,25 +1,21 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { app } from "electron";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { logger } from "../utils/logger";
 
 const execAsync = promisify(exec);
 
-let mongoServer: MongoMemoryServer | null = null;
-let dockerMongoRunning = false;
-
-const isDev = !app.isPackaged;
+const DOCKER_CONTAINER_NAME = process.env.MONGODB_DOCKER_CONTAINER || "taskboard_mongo";
+const DOCKER_SERVICE_NAME = process.env.MONGODB_DOCKER_SERVICE || "mongodb";
 
 /**
- * Check if Docker MongoDB is running (dev mode)
+ * Check if the MongoDB Docker container is running.
  */
 async function isDockerMongoRunning(): Promise<boolean> {
-	if (!isDev) return false;
-
 	try {
-		const { stdout } = await execAsync('docker ps --filter "name=dt_mongo" --format "{{.Names}}"');
-		return stdout.trim() === "dt_mongo";
+		const { stdout } = await execAsync(
+			`docker ps --filter "name=${DOCKER_CONTAINER_NAME}" --format "{{.Names}}"`,
+		);
+		return stdout.trim() === DOCKER_CONTAINER_NAME;
 	} catch (error) {
 		logger.error("Error checking Docker MongoDB status:", error);
 		return false;
@@ -27,99 +23,30 @@ async function isDockerMongoRunning(): Promise<boolean> {
 }
 
 /**
- * Start Docker MongoDB (dev mode)
+ * Start MongoDB via Docker Compose if needed.
  */
 async function startDockerMongo(): Promise<void> {
 	try {
-		logger.info("Starting Docker MongoDB...");
-		await execAsync("docker-compose up -d mongodb");
-		dockerMongoRunning = true;
+		logger.info("Starting Docker MongoDB container...");
+
+		// Prefer `docker compose` (v2), fall back to legacy `docker-compose`
+		try {
+			await execAsync(`docker compose up -d ${DOCKER_SERVICE_NAME}`);
+		} catch (composeV2Error) {
+			logger.warn("docker compose failed, falling back to docker-compose. Error:", composeV2Error);
+			await execAsync(`docker-compose up -d ${DOCKER_SERVICE_NAME}`);
+		}
+
 		logger.info("Docker MongoDB started successfully");
 	} catch (error) {
 		logger.error("Failed to start Docker MongoDB:", error);
-		throw new Error("Failed to start Docker MongoDB. Make sure Docker is running.");
+		throw new Error("Failed to start Docker MongoDB. Make sure Docker Desktop is installed and running.");
 	}
 }
 
 /**
- * Start embedded MongoDB (production mode)
- */
-async function startEmbeddedMongo(): Promise<string> {
-	try {
-		logger.info("Starting embedded MongoDB...");
-		logger.info("This may take a few minutes on first run (downloading MongoDB binaries)...");
-		logger.info("Binary size is approximately 50-100 MB depending on platform.");
-
-		const downloadDir = app.getPath("userData") + "/mongodb-binaries";
-		const dbPath = app.getPath("userData") + "/mongodb-data";
-		logger.info("MongoDB binaries will be stored at:", downloadDir);
-		logger.info("MongoDB data will be stored at:", dbPath);
-
-		// Ensure the data directory exists
-		const fs = await import("fs");
-		if (!fs.existsSync(dbPath)) {
-			logger.info("Creating data directory...");
-			fs.mkdirSync(dbPath, { recursive: true });
-		}
-
-		logger.info("Creating MongoMemoryServer instance...");
-
-		const startTime = Date.now();
-
-		// Configure mongodb-memory-server with persistent storage
-		mongoServer = await MongoMemoryServer.create({
-			instance: {
-				port: 27018,
-				dbName: "taskboard",
-				storageEngine: "wiredTiger",
-				dbPath: dbPath, // Persistent storage path
-			},
-			binary: {
-				version: "7.0.14",
-				downloadDir: downloadDir,
-				checkMD5: false, // Skip MD5 check to avoid network issues
-			},
-		});
-
-		const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-		const uri = mongoServer.getUri();
-		logger.info(`✓ Embedded MongoDB started successfully in ${duration}s`);
-		logger.info(`   URI: ${uri}`);
-		logger.info(`   Data persisted at: ${dbPath}`);
-		return uri;
-	} catch (error) {
-		logger.error("✗ Failed to start embedded MongoDB");
-		if (error instanceof Error) {
-			logger.error("Error name:", error.name);
-			logger.error("Error message:", error.message);
-			logger.error("Error stack:", error.stack);
-		} else {
-			logger.error("Unknown error:", error);
-		}
-
-		// Provide helpful error messages for common issues
-		const errorMsg = error instanceof Error ? error.message : String(error);
-		if (errorMsg.includes("ENOTFOUND") || errorMsg.includes("getaddrinfo")) {
-			logger.error("Network error detected. Please check your internet connection.");
-			logger.error("If behind a proxy, you may need to configure proxy settings.");
-		} else if (errorMsg.includes("EACCES") || errorMsg.includes("permission denied")) {
-			logger.error("Permission error detected. Try running as administrator.");
-		} else if (errorMsg.includes("ENOSPC")) {
-			logger.error("Disk space error. Please free up some disk space.");
-		} else if (errorMsg.includes("timeout") || errorMsg.includes("ETIMEDOUT")) {
-			logger.error("Download timeout. Your internet connection may be too slow.");
-			logger.error("Try again later or on a faster network.");
-		}
-
-		throw new Error(
-			"Failed to start embedded MongoDB: " + (error instanceof Error ? error.message : String(error)),
-		);
-	}
-}
-
-/**
- * Initialize MongoDB server
- * Returns the connection URI
+ * Initialize MongoDB server managed by Docker.
+ * Returns the connection URI (without forcing a specific database name).
  */
 export async function initializeMongoServer(): Promise<string> {
 	// Allow disabling MongoDB via environment variable
@@ -128,59 +55,68 @@ export async function initializeMongoServer(): Promise<string> {
 		throw new Error("MongoDB disabled by configuration");
 	}
 
-	if (isDev) {
-		// Development mode: Use Docker
-		logger.info("Running in DEVELOPMENT mode - attempting to use Docker MongoDB");
-		const dockerRunning = await isDockerMongoRunning();
+	const externalUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+	const defaultUri = "mongodb://localhost:27018";
+	const mongoUri = externalUri || defaultUri;
 
-		if (!dockerRunning) {
+	const autoStart = process.env.MONGODB_AUTO_START !== "false";
+
+	if (autoStart) {
+		logger.info("Using Docker-managed MongoDB instance");
+		const running = await isDockerMongoRunning();
+
+		if (!running) {
+			logger.info(`Docker container '${DOCKER_CONTAINER_NAME}' not running, attempting to start it...`);
 			await startDockerMongo();
 			// Wait a bit for Docker MongoDB to be ready
 			await new Promise((resolve) => setTimeout(resolve, 2000));
 		} else {
-			logger.info("Docker MongoDB is already running");
-			dockerMongoRunning = true;
+			logger.info("Docker MongoDB container is already running");
 		}
-
-		return "mongodb://localhost:27018/taskboard_dev";
 	} else {
-		// Production mode: Use embedded MongoDB
-		logger.info("Running in PRODUCTION mode - using embedded MongoDB");
-		return await startEmbeddedMongo();
+		logger.info(
+			"MONGODB_AUTO_START=false - assuming MongoDB is already running (e.g. started via docker-compose manually)",
+		);
 	}
+
+	logger.info("MongoDB server initialized via Docker at base URI:", mongoUri);
+	return mongoUri;
 }
 
 /**
- * Stop MongoDB server
+ * Stop MongoDB server.
+ * By default we do not stop Docker containers to avoid interfering with other processes.
+ * You can opt-in by setting MONGODB_AUTO_STOP=true.
  */
 export async function stopMongoServer(): Promise<void> {
-	if (mongoServer) {
-		try {
-			logger.info("Stopping embedded MongoDB...");
-			await mongoServer.stop();
-			mongoServer = null;
-			logger.info("Embedded MongoDB stopped");
-		} catch (error) {
-			logger.error("Error stopping embedded MongoDB:", error);
-		}
-	}
+	try {
+		logger.info("Stopping Docker MongoDB container...");
 
-	// Note: We don't stop Docker in dev mode as it might be used by other processes
-	// and the user can manage it manually
+		try {
+			await execAsync(`docker compose stop ${DOCKER_SERVICE_NAME}`);
+		} catch (composeV2Error) {
+			logger.warn("docker compose stop failed, falling back to docker-compose stop. Error:", composeV2Error);
+			await execAsync(`docker-compose stop ${DOCKER_SERVICE_NAME}`);
+		}
+
+		logger.info("Docker MongoDB container stopped");
+	} catch (error) {
+		logger.error("Error stopping Docker MongoDB container:", error);
+	}
 }
 
 /**
- * Get MongoDB connection status
+ * Get MongoDB connection status.
+ * This is a best-effort status and assumes Docker-managed mode.
  */
 export function getMongoServerStatus(): {
 	isRunning: boolean;
-	mode: "docker" | "embedded" | "none";
+	mode: "docker" | "none";
 } {
-	if (isDev && dockerMongoRunning) {
-		return { isRunning: true, mode: "docker" };
-	}
-	if (mongoServer) {
-		return { isRunning: true, mode: "embedded" };
-	}
-	return { isRunning: false, mode: "none" };
+	// We don't perform an expensive Docker check here; the real connectivity
+	// is tracked via Mongoose events in `connection.ts`.
+	return {
+		isRunning: true,
+		mode: "docker",
+	};
 }

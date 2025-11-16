@@ -1,6 +1,6 @@
 services:
   mongodb:
-    container_name: dt_mongo
+    container_name: taskboard_mongo
     image: mongo:latest
     volumes:
       - mongo-data:/data/db

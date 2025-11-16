@@ -30,15 +30,12 @@ A modern desktop application for managing multiple task boards (projects) with a
 
 - **Node.js** v18 or higher
 - **pnpm** (install with: `npm install -g pnpm`)
-- **Docker** (for development only - [Install Docker](https://docs.docker.com/get-docker/))
+- **Docker Desktop** (or Docker Engine) with **docker-compose** support
 
-> **Note**: MongoDB is **automatically managed** by the app:
-> - **Development**: Uses Docker (auto-starts when you run `pnpm dev`)
-> - **Production**: Embedded MongoDB included in the app (no external dependencies)
-> - **First Run**: May take 2-5 minutes to download MongoDB binaries (~50-100 MB)
-> - **Subsequent Runs**: Starts instantly using cached binaries
->
-> See [MongoDB Setup Guide](./docs/MONGODB_SETUP.md) for detailed information.
+> **Note**: MongoDB is **always run in Docker** via `docker-compose.yml`:
+> - **Development**: `pnpm dev` auto-starts the `mongodb` service (`taskboard_mongo` on port `27018`)
+> - **Production**: Run `docker-compose up -d mongodb` to provide the MongoDB instance the app will connect to
+> - **Configurable**: You can override the default URI by setting `MONGODB_URI`
 
 ### Installation
 
@@ -55,11 +52,6 @@ pnpm install
 ```bash
 # Start the development server (MongoDB auto-starts via Docker)
 pnpm dev
-
-# Or manually manage MongoDB:
-pnpm mongo:start   # Start MongoDB
-pnpm mongo:stop    # Stop MongoDB
-pnpm mongo:logs    # View MongoDB logs
 ```
 
 The app will open in a new window with hot reload enabled.
@@ -84,14 +76,12 @@ pnpm build:linux
 
 When you run the built application for the first time:
 
-1. **Loading Screen Appears**: You'll see a loading screen with progress messages
-2. **Binary Download**: MongoDB binaries (~50-100 MB) will be downloaded automatically
-   - This takes 2-5 minutes depending on your internet speed
-   - Progress messages keep you informed of what's happening
-3. **Automatic Startup**: Once download completes, the app starts automatically
-4. **Subsequent Launches**: Take only 2-5 seconds using cached binaries
+1. **Ensure Docker is running** (Docker Desktop started, or Docker Engine active).
+2. **Start MongoDB via Docker Compose**:
+   - From the project directory or deployment folder, run: `docker-compose up -d mongodb`
+3. **Launch the app** (installer / packaged build or `pnpm start` in preview mode).
 
-> **Tip**: If the loading screen shows a warning after 2 minutes, check your internet connection. The app will timeout after 5 minutes if download fails.
+> **Tip**: If the app shows database connection errors, check that the `taskboard_mongo` container is running (`docker ps`) and listening on port `27018`, or adjust `MONGODB_URI` accordingly.
 
 ## 🏗️ Technology Stack
 
@@ -196,8 +186,8 @@ task_board/
 
 ```bash
 # Development
-pnpm dev              # Start development server (auto-starts MongoDB)
-pnpm start            # Start built app in preview mode
+pnpm dev              # Start development server (auto-starts MongoDB in Docker)
+pnpm start            # Start built app in preview mode (expects MongoDB Docker container running)
 
 # Building
 pnpm build            # Build for production
@@ -205,18 +195,7 @@ pnpm build:win        # Build Windows installer
 pnpm build:mac        # Build macOS installer
 pnpm build:linux      # Build Linux installer
 
-# MongoDB Management (Development)
-pnpm mongo:start      # Start Docker MongoDB manually
-pnpm mongo:stop       # Stop Docker MongoDB
-pnpm mongo:logs       # View MongoDB logs
-
 # Code Quality
-pnpm typecheck        # Type checking
-pnpm lint             # Run ESLint
-pnpm format           # Format code with Prettier
-```bash
-pnpm dev              # Start development server
-pnpm build            # Build for production
 pnpm typecheck        # Type checking
 pnpm lint             # Run ESLint
 pnpm format           # Format code with Prettier
@@ -228,22 +207,22 @@ pnpm format           # Format code with Prettier
 ### App Won't Open After Installation
 
 1. Check the log file: Help → Open Log File (or `%APPDATA%\taskboard\logs\`)
-2. Ensure you have a stable internet connection (first run downloads MongoDB binaries)
-3. Wait up to 5 minutes on first launch for MongoDB setup
+2. Ensure **Docker** is running (Docker Desktop started)
+3. Ensure the MongoDB container is running: `docker ps` should show `taskboard_mongo`
 4. Try running as administrator if permission errors occur
 
 ### MongoDB Connection Issues
 
-- **Development**: Ensure Docker is running (`docker ps` should show `dt_mongo`)
-- **Production**: Check logs for detailed error messages
-- **Network**: If behind a proxy, MongoDB download may fail
+- **Docker MongoDB (default)**:
+  - Check that the `taskboard_mongo` container is running and listening on port `27018`
+  - View container logs with `pnpm mongo:logs` or `docker logs taskboard_mongo`
+- **Custom MongoDB URI**: If using `MONGODB_URI`, verify the URI and that the instance is reachable
 
 ### Loading Screen Stuck
 
-- If stuck for more than 5 minutes, close and restart the app
-- Check internet connection
-- Review logs for timeout or network errors
-- Try deleting `%APPDATA%\taskboard\mongodb-binaries` and restarting
+- If stuck for more than 1–2 minutes, close and restart the app
+- Check that Docker and the MongoDB container are running
+- Review logs for connection timeouts or authentication errors
 
 ## 🙏 Acknowledgments
 

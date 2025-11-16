@@ -320,9 +320,7 @@ Alcune funzionalità costruite sopra MongoDB/Mongoose mostrano bene l’integraz
 
 - **Database connection lifecycle – `connection.ts` + `mongoServer.ts`**
   - `connectDatabase()`:
-    - inizializza il server Mongo:
-      - in **dev** tenta prima Docker (`dt_mongo`),
-      - in **prod** usa `MongoMemoryServer` con storage persistente in `userData`.
+    - inizializza il server Mongo: prova a connettersi ad una docker image chiamata (`taskboard_mongo`)
     - costruisce una URI `.../taskboard`, si connette con `mongoose.connect`, e aggiorna lo `statusManager` con lo stato attuale (inizializzazione / connesso / errore).
     - gestisce eventi `mongoose.connection.on("error" | "disconnected")` per aggiornare lo stato e i log.
   - `disconnectDatabase()`:
