@@ -4,6 +4,29 @@ paginate: true
 ---
 
 <style>
+section {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top left, #eef2ff 0, #f9fafb 45%, #ffffff 100%);
+  color: #111827;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.9rem;
+  margin-bottom: 0.4rem;
+}
+
+h2 {
+  font-size: 1.45rem;
+  display: inline-block;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.15rem;
+}
+
+a {
+  color: #2563eb;
+}
+
 section::after {
   content: attr(data-marpit-pagination);
   position: absolute;
@@ -95,6 +118,27 @@ section::after {
 .pros-cons ul {
   padding-left: 1.1rem;
   margin: 0;
+}
+
+.tech-intro {
+  margin-top: 0.6rem;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  background: #f9fafb;
+  border-left: 4px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.react-intro { border-left-color: #0ea5e9; }
+.mongo-intro { border-left-color: #16a34a; }
+.mongoose-intro { border-left-color: #f97316; }
+
+.tech-list {
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  background: #f9fafb;
+  border-left: 3px solid #e5e7eb;
 }
 
 .stack-cards {
@@ -296,9 +340,11 @@ Fonte: [Why Electron](https://www.electronjs.org/docs/latest/why-electron)
 
 ## React – Cos’è
 
-React è una **libreria JavaScript per costruire interfacce utente**.
-Permette di descrivere la UI in modo **dichiarativo**, componendo piccole unità riutilizzabili (componenti) che si aggiornano in base allo **stato** dell’applicazione, così da rendere il codice più prevedibile e facile da testare.
-La filosofia ufficiale è “**UI = f(state)**”: ti concentri su come la UI dovrebbe apparire per ogni stato, e React si occupa di aggiornare il DOM in modo efficiente.
+<div class="tech-intro react-intro">
+React è una <strong>libreria JavaScript per costruire interfacce utente</strong>.
+Permette di descrivere la UI in modo <strong>dichiarativo</strong>, componendo piccole unità riutilizzabili (componenti) che si aggiornano in base allo <strong>stato</strong> dell’applicazione, rendendo il codice più prevedibile e più facile da testare.
+La filosofia ufficiale è “<strong>UI = f(state)</strong>”: ti concentri su come la UI dovrebbe apparire per ogni stato, e React si occupa di aggiornare il DOM in modo efficiente tramite il Virtual DOM.
+</div>
 -> https://react.dev/
 
 ---
@@ -351,8 +397,10 @@ La filosofia ufficiale è “**UI = f(state)**”: ti concentri su come la UI do
 ---
 
 ## MongoDB – Cos’è
-MongoDB è un **database NoSQL orientato ai documenti**: memorizza i dati in documenti JSON/BSON con **schema flessibile**, pensato per scalare in larghezza e per dare ai team di sviluppo grande agilità.
-La documentazione lo descrive come un “document database” progettato per applicazioni moderne che richiedono **alta disponibilità**, **scalabilità orizzontale** e un modello dati naturale per gli oggetti delle applicazioni.
+<div class="tech-intro mongo-intro">
+MongoDB è un <strong>database NoSQL orientato ai documenti</strong>: memorizza i dati in documenti JSON/BSON con <strong>schema flessibile</strong>, pensato per scalare in larghezza e per dare ai team di sviluppo grande agilità.
+La documentazione lo descrive come un “document database” progettato per applicazioni moderne che richiedono <strong>alta disponibilità</strong>, <strong>scalabilità orizzontale</strong> e un modello dati naturale per gli oggetti delle applicazioni.
+</div>
 -> https://www.mongodb.com/docs/
 
 ---
@@ -402,9 +450,11 @@ La documentazione lo descrive come un “document database” progettato per app
 ---
 
 ## Mongoose – Cos’è
-Mongoose è una libreria di **Object Data Modeling (ODM)** per MongoDB in ambiente **Node.js**.
-Fornisce una soluzione basata su **schemi** per modellare i dati, con funzionalità integrate di **casting dei tipi, validazione, costruzione di query, middleware (hook)** e utility per lavorare con un database a documenti in modo più strutturato.
+<div class="tech-intro mongoose-intro">
+Mongoose è una libreria di <strong>Object Data Modeling (ODM)</strong> per MongoDB in ambiente <strong>Node.js</strong>.
+Fornisce una soluzione basata su <strong>schemi</strong> per modellare i dati, con funzionalità integrate di <strong>casting dei tipi, validazione, costruzione di query e middleware (hook)</strong>, offrendo un modo più strutturato di lavorare con un database a documenti.
 È pensato per fare da “collante” tra il modello a oggetti della tua applicazione Node.js e i documenti MongoDB.
+</div>
 -> https://mongoosejs.com/docs/
 
 ---
