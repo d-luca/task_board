@@ -271,8 +271,11 @@ function createWindow(): void {
 	// Load saved window state
 	const windowState = loadWindowState();
 
+	const icon = join(app.getAppPath(), "public", "icons", "icon.png");
+
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
+		icon,
 		width: windowState.width,
 		height: windowState.height,
 		x: windowState.x,
