@@ -59,7 +59,8 @@ section::after {
   font-size: 0.8rem;
 }
 
-.electron-list {
+.electron-list,
+.tech-list {
   font-size: 0.9rem;
 }
 
@@ -294,78 +295,150 @@ Fonte: [Why Electron](https://www.electronjs.org/docs/latest/why-electron)
 ---
 
 ## React – Cos’è
-Libreria JS per creare UI basate su componenti
+
+Libreria JavaScript per creare **interfacce utente basate su componenti**, descrivendo la UI in modo **dichiarativo** a partire dallo stato dell’applicazione.
 -> https://react.dev/
 
 ---
 
 ## React – Quando usarlo
-- UI complesse e dinamiche
-- Componenti riutilizzabili
-- Stato locale/globale
+<div class="tech-list">
+
+- **UI complesse e dinamiche**: molte viste e interazioni, con stato che cambia spesso.
+- **Componenti riutilizzabili**: design system, librerie di componenti, UI condivise tra progetti.
+- **Gestione di stato locale/globale**: quando serve orchestrare lo stato tra molte parti dell’interfaccia.
+</div>
 
 ---
 
 ## React – Quando evitarlo
-- Pagine statiche semplici
-- SEO critico senza SSR
+<div class="tech-list">
+
+- **Pagine statiche molto semplici**: sito vetrina o contenuti rari da aggiornare, dove un generatore statico è sufficiente.
+- **SEO critico senza SSR/SSG**: se non puoi usare tecniche come SSR (es. Next.js) o pre‑rendering, l’SPA pura può essere un limite.
+</div>
 
 ---
 
 ## React – Pro e Contro
-**Pro**: Virtual DOM, ecosistema, TypeScript ready
-**Contro**: toolchain obbligatoria, learning curve
+
+<div class="pros-cons">
+  <div class="pros-cons-column pros-column">
+    <div class="pros-cons-title">Pro ⚛️</div>
+    <ul>
+      <li><strong>Virtual DOM</strong>: aggiornamenti efficienti della UI sulla base dello stato.</li>
+      <li><strong>Componenti riutilizzabili</strong>: facilita design system e manutenzione.</li>
+      <li><strong>Ecosistema enorme</strong>: router, state management, tooling, integrazione con TypeScript.</li>
+      <li><strong>Community matura</strong>: tanta documentazione, pattern e best practice.</li>
+    </ul>
+  </div>
+  <div class="pros-cons-column cons-column">
+    <div class="pros-cons-title">Contro ⚠️</div>
+    <ul>
+      <li><strong>Toolchain necessaria</strong>: bundler, dev server, configurazioni (anche se spesso scaffolding automatico).</li>
+      <li><strong>Learning curve</strong>: JSX, hooks, gestione dello stato possono richiedere tempo.</li>
+      <li><strong>Ecosistema in rapido movimento</strong>: librerie e best practice evolvono spesso.</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
 ## MongoDB – Cos’è
-Database NoSQL orientato ai documenti JSON
+Database **NoSQL orientato ai documenti**, che memorizza i dati in documenti JSON/BSON flessibili e annidabili.
 -> https://www.mongodb.com/docs/
 
 ---
 
 ## MongoDB – Quando usarlo
-- Schemi flessibili
-- Dati annidati
-- Rapid prototyping
+<div class="tech-list">
+
+- **Schemi flessibili**: domini in cui la struttura dei dati cambia spesso o non è rigidamente definita.
+- **Dati annidati e complessi**: oggetti con sotto‑documenti, liste, strutture gerarchiche naturali.
+- **Rapid prototyping**: quando vuoi andare velocemente in produzione senza modellare subito un schema relazionale completo.
+</div>
 
 ---
 
 ## MongoDB – Quando evitarlo
-- Dati relazionali complessi
-- Transazioni multiple
+<div class="tech-list">
+
+- **Dati fortemente relazionali**: molti join complessi tra tabelle/entità diverse.
+- **Transazioni complesse su molti record**: casi in cui la consistenza forte è un requisito stringente.
+</div>
 
 ---
 
 ## MongoDB – Pro e Contro
-**Pro**: scalabile, schema-less, JSON-friendly
-**Contro**: join manuali, storage maggiore
+
+<div class="pros-cons">
+  <div class="pros-cons-column pros-column">
+    <div class="pros-cons-title">Pro 🍃</div>
+    <ul>
+      <li><strong>Schema flessibile</strong>: facile adattarsi a nuove esigenze di business.</li>
+      <li><strong>Scalabilità orizzontale</strong>: replica e sharding per grandi volumi di dati.</li>
+      <li><strong>JSON‑friendly</strong>: integrazione naturale con JavaScript/Node.js e formati JSON.</li>
+    </ul>
+  </div>
+  <div class="pros-cons-column cons-column">
+    <div class="pros-cons-title">Contro ⚠️</div>
+    <ul>
+      <li><strong>Join manuali</strong>: relazioni complesse richiedono aggregazioni e lookup più verbosi.</li>
+      <li><strong>Storage maggiore</strong>: i documenti possono occupare più spazio rispetto a strutture relazionali normalizzate.</li>
+      <li><strong>Consistenza eventuale</strong>: in alcuni setup distribuiti va gestita con attenzione.</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
 ## Mongoose – Cos’è
-ODM (Object Data Modeling) per **MongoDB** in ambiente **Node.js**
+ODM (Object Data Modeling) per **MongoDB** in ambiente **Node.js**, che aggiunge schemi, validazione e middleware sopra un database schema‑less.
 -> https://mongoosejs.com/docs/
 
 ---
 
 ## Mongoose – Quando usarlo
-- Vuoi **schemi espliciti** sopra un database schema-less
-- Hai molta **validazione** e regole di business lato backend
-- Vuoi aggiungere **metodi custom** e middleware ai tuoi modelli
+<div class="tech-list">
+
+- Vuoi **schemi espliciti** sopra un database schema‑less per avere struttura e controllo.
+- Hai molta **validazione** e regole di business lato backend da centralizzare sui modelli.
+- Vuoi aggiungere **metodi custom** e middleware (hook pre/post) ai tuoi modelli di dominio.
+</div>
 
 ---
 
 ## Mongoose – Quando evitarlo
-- Vuoi usare il **driver MongoDB nativo** senza astrazioni
-- Progetto molto semplice, dove lo schema formale è superfluo
-- Caso d’uso con **massime prestazioni** e minimo overhead
+<div class="tech-list">
+
+- Vuoi usare il **driver MongoDB nativo** senza livelli di astrazione aggiuntivi.
+- Progetto molto semplice, dove lo schema formale non porta reale valore.
+- Caso d’uso con **massime prestazioni** e minimo overhead, dove ogni layer conta.
+</div>
 
 ---
 
 ## Mongoose – Pro e Contro
-**Pro**: schema chiaro, validazione integrata, middleware/hook, populate
-**Contro**: livello di astrazione in più, learning curve, può vincolare il modello dati
+
+<div class="pros-cons">
+  <div class="pros-cons-column pros-column">
+    <div class="pros-cons-title">Pro 🧩</div>
+    <ul>
+      <li><strong>Schema chiaro</strong>: modella esplicitamente le collezioni MongoDB.</li>
+      <li><strong>Validazione integrata</strong>: regole sui campi prima del salvataggio.</li>
+      <li><strong>Middleware / hook</strong>: logica condivisa su eventi (save, update, remove, ecc.).</li>
+      <li><strong>Populate</strong>: gestione più comoda delle relazioni tra documenti.</li>
+    </ul>
+  </div>
+  <div class="pros-cons-column cons-column">
+    <div class="pros-cons-title">Contro ⚠️</div>
+    <ul>
+      <li><strong>Layer di astrazione in più</strong>: un po’ di overhead rispetto al driver nativo.</li>
+      <li><strong>Learning curve</strong>: schema, hook, populate e plugin richiedono tempo per essere padroneggiati.</li>
+      <li><strong>Vincolo sul modello dati</strong>: gli schemi possono diventare rigidi se il dominio evolve spesso.</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
