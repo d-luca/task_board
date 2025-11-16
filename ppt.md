@@ -296,7 +296,9 @@ Fonte: [Why Electron](https://www.electronjs.org/docs/latest/why-electron)
 
 ## React – Cos’è
 
-Libreria JavaScript per creare **interfacce utente basate su componenti**, descrivendo la UI in modo **dichiarativo** a partire dallo stato dell’applicazione.
+React è una **libreria JavaScript per costruire interfacce utente**.
+Permette di descrivere la UI in modo **dichiarativo**, componendo piccole unità riutilizzabili (componenti) che si aggiornano in base allo **stato** dell’applicazione, così da rendere il codice più prevedibile e facile da testare.
+La filosofia ufficiale è “**UI = f(state)**”: ti concentri su come la UI dovrebbe apparire per ogni stato, e React si occupa di aggiornare il DOM in modo efficiente.
 -> https://react.dev/
 
 ---
@@ -304,9 +306,11 @@ Libreria JavaScript per creare **interfacce utente basate su componenti**, descr
 ## React – Quando usarlo
 <div class="tech-list">
 
-- **UI complesse e dinamiche**: molte viste e interazioni, con stato che cambia spesso.
-- **Componenti riutilizzabili**: design system, librerie di componenti, UI condivise tra progetti.
-- **Gestione di stato locale/globale**: quando serve orchestrare lo stato tra molte parti dell’interfaccia.
+- **UI complesse e dinamiche**: molte viste e interazioni (form ricchi, dashboard, app data‑driven) con stato che cambia spesso nel tempo.
+- **Componenti riutilizzabili**: creazione di design system e librerie di componenti condivisi tra team e progetti (“build encapsulated components that manage their own state” – [React docs](https://react.dev/)).
+- **Applicazioni a lungo ciclo di vita**: progetti che evolvono nel tempo, dove la manutenibilità del codice UI diventa critica.
+- **Gestione di stato locale/globale**: quando serve orchestrare lo stato tra molte parti dell’interfaccia, sfruttando state, context e librerie di state management dell’ecosistema React.
+- **Team già dentro l’ecosistema JS**: quando vuoi integrare facilmente tooling moderno (TypeScript, bundler, test, linting) in una codebase front‑end strutturata.
 </div>
 
 ---
@@ -314,8 +318,10 @@ Libreria JavaScript per creare **interfacce utente basate su componenti**, descr
 ## React – Quando evitarlo
 <div class="tech-list">
 
-- **Pagine statiche molto semplici**: sito vetrina o contenuti rari da aggiornare, dove un generatore statico è sufficiente.
-- **SEO critico senza SSR/SSG**: se non puoi usare tecniche come SSR (es. Next.js) o pre‑rendering, l’SPA pura può essere un limite.
+- **Pagine statiche molto semplici**: mini‑siti vetrina o contenuti quasi mai aggiornati, dove HTML/CSS statico o un semplice static site generator bastano.
+- **SEO critico senza SSR/SSG**: se non puoi usare tecniche come SSR/SSG (es. Next.js, Remix) e dipendi molto dai crawler tradizionali, una SPA client‑side pura può penalizzare l’indicizzazione.
+- **Vincoli forti su bundle e runtime JS**: contesti con pochissimo JavaScript consentito (es. email, alcune integrazioni embedded) dove una libreria client‑side non è adatta.
+- **Team non familiari con tool moderni**: se non puoi introdurre bundler, transpiler e tooling tipici dell’ecosistema React, potresti preferire soluzioni più leggere.
 </div>
 
 ---
@@ -345,7 +351,8 @@ Libreria JavaScript per creare **interfacce utente basate su componenti**, descr
 ---
 
 ## MongoDB – Cos’è
-Database **NoSQL orientato ai documenti**, che memorizza i dati in documenti JSON/BSON flessibili e annidabili.
+MongoDB è un **database NoSQL orientato ai documenti**: memorizza i dati in documenti JSON/BSON con **schema flessibile**, pensato per scalare in larghezza e per dare ai team di sviluppo grande agilità.
+La documentazione lo descrive come un “document database” progettato per applicazioni moderne che richiedono **alta disponibilità**, **scalabilità orizzontale** e un modello dati naturale per gli oggetti delle applicazioni.
 -> https://www.mongodb.com/docs/
 
 ---
@@ -353,9 +360,10 @@ Database **NoSQL orientato ai documenti**, che memorizza i dati in documenti JSO
 ## MongoDB – Quando usarlo
 <div class="tech-list">
 
-- **Schemi flessibili**: domini in cui la struttura dei dati cambia spesso o non è rigidamente definita.
-- **Dati annidati e complessi**: oggetti con sotto‑documenti, liste, strutture gerarchiche naturali.
-- **Rapid prototyping**: quando vuoi andare velocemente in produzione senza modellare subito un schema relazionale completo.
+- **Schemi flessibili**: domini in cui la struttura dei dati cambia spesso o non è rigidamente definita; il modello a documenti riduce la necessità di migrazioni schema complesse.
+- **Dati annidati e complessi**: oggetti con sotto‑documenti, array e strutture gerarchiche che si mappano bene in un singolo documento (es. ordini con righe ordine, profili utente con preferenze).
+- **Applicazioni cloud‑native / scalabili**: quando servono **scalabilità orizzontale** (sharding), replica e alta disponibilità in cluster distribuiti.
+- **Sviluppo rapido**: progetti in cui vuoi iterare velocemente, prototipare e modificare la struttura dei dati man mano che il dominio si chiarisce.
 </div>
 
 ---
@@ -363,8 +371,9 @@ Database **NoSQL orientato ai documenti**, che memorizza i dati in documenti JSO
 ## MongoDB – Quando evitarlo
 <div class="tech-list">
 
-- **Dati fortemente relazionali**: molti join complessi tra tabelle/entità diverse.
-- **Transazioni complesse su molti record**: casi in cui la consistenza forte è un requisito stringente.
+- **Dati fortemente relazionali**: molti join complessi tra entità (tipico di ERP, contabilità, domini molto normalizzati) dove un RDBMS tradizionale è più naturale.
+- **Transazioni complesse multi‑documento**: casi con numerose operazioni che devono essere sempre atomiche al 100% (sebbene MongoDB supporti transazioni ACID, il modello relazionale rimane più adatto in scenari fortemente transazionali).
+- **Reporting SQL‑heavy**: quando il team e gli strumenti sono centrati su SQL tradizionale e query analitiche complesse direttamente sul database operazionale.
 </div>
 
 ---
@@ -393,7 +402,9 @@ Database **NoSQL orientato ai documenti**, che memorizza i dati in documenti JSO
 ---
 
 ## Mongoose – Cos’è
-ODM (Object Data Modeling) per **MongoDB** in ambiente **Node.js**, che aggiunge schemi, validazione e middleware sopra un database schema‑less.
+Mongoose è una libreria di **Object Data Modeling (ODM)** per MongoDB in ambiente **Node.js**.
+Fornisce una soluzione basata su **schemi** per modellare i dati, con funzionalità integrate di **casting dei tipi, validazione, costruzione di query, middleware (hook)** e utility per lavorare con un database a documenti in modo più strutturato.
+È pensato per fare da “collante” tra il modello a oggetti della tua applicazione Node.js e i documenti MongoDB.
 -> https://mongoosejs.com/docs/
 
 ---
@@ -401,9 +412,10 @@ ODM (Object Data Modeling) per **MongoDB** in ambiente **Node.js**, che aggiunge
 ## Mongoose – Quando usarlo
 <div class="tech-list">
 
-- Vuoi **schemi espliciti** sopra un database schema‑less per avere struttura e controllo.
-- Hai molta **validazione** e regole di business lato backend da centralizzare sui modelli.
-- Vuoi aggiungere **metodi custom** e middleware (hook pre/post) ai tuoi modelli di dominio.
+- Stai costruendo un’applicazione **Node.js che usa MongoDB** e vuoi un livello di modellazione più ricco rispetto al driver nativo.
+- Vuoi **schemi espliciti** sopra un database schema‑less per avere struttura, tipi e regole di validazione centralizzate.
+- Hai molta **logica di business legata al ciclo di vita dei dati** (es. prima/dopo il salvataggio) che vuoi incapsulare in middleware/hook.
+- Vuoi definire **metodi custom** sui modelli (instance & static methods) e plugin riutilizzabili per cross‑cutting concerns (audit, soft delete, ecc.).
 </div>
 
 ---
@@ -411,9 +423,9 @@ ODM (Object Data Modeling) per **MongoDB** in ambiente **Node.js**, che aggiunge
 ## Mongoose – Quando evitarlo
 <div class="tech-list">
 
-- Vuoi usare il **driver MongoDB nativo** senza livelli di astrazione aggiuntivi.
-- Progetto molto semplice, dove lo schema formale non porta reale valore.
-- Caso d’uso con **massime prestazioni** e minimo overhead, dove ogni layer conta.
+- Vuoi usare il **driver MongoDB nativo** per avere pieno controllo sulle query e zero overhead di astrazione.
+- Progetto molto semplice o script monouso, dove introdurre schemi e modelli formali aggiunge solo complessità.
+- Casi d’uso con **requisiti di prestazioni estremi** e profiling molto spinto, dove ogni millisecondo conta e vuoi evitare strati intermedi.
 </div>
 
 ---
